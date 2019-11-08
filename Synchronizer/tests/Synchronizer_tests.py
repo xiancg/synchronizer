@@ -8,7 +8,17 @@ import os
 
 
 class SynchronizerTest(unittest.TestCase):
-    pass
+    def setUp(self):
+        self.sync = Synchronizer()
+
+    def test_get_sync_status(self):
+        src_path = ""
+        trg_path = ""
+        result = self.sync.get_sync_status(src_path, trg_path)
+        self.assertEqual(1, result)
+
+    def test_get_dir_size(self):
+        pass
 
 # --------------------------------------------------------
 #  Main

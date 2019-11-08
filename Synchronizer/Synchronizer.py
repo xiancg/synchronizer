@@ -15,6 +15,10 @@ import logging
 
 logger = logging.getLogger(name='synclog')
 
+class Synchronizer(object):
+    def __init__(self):
+        pass
+
 def init_logger():
     logger.setLevel(logging.DEBUG)
     #Formatter
@@ -45,9 +49,6 @@ def init_file_logger():
     fileHandler.setLevel(logging.DEBUG)
     fileHandler.setFormatter(formatter)
     logger.addHandler(fileHandler)
-
-class Synchronizer(object):
-    pass
 
 # * Sync session events
 init_logger()
