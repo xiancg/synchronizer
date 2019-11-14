@@ -3,5 +3,10 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"terminal.integrated.env.windows": {
+		"PYTHONPATH": "F:/NXA/Pipeline/Synchronizer"
+		}
+	}
 }
