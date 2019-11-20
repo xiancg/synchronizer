@@ -7,19 +7,5 @@ import shutil
 
 from synchronizer.logger import logger
 
-# TODO: Revisar pipenv
-# TODO: Revisar pytest-datafiles
-# TODO: Revisar pytest-coverage
-# TODO: Revisar 
-
 def get_sync_status(src_path, trg_path):
     return 1
-
-# --------------------------------------------------------
-#  Main
-# --------------------------------------------------------
-def main():
-    pass
-
-if __name__ == "__main__" or 'eclipsePython' in __name__:
-    main()
