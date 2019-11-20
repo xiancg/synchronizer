@@ -35,9 +35,8 @@ class TestClass:
     def test_get_sync_status(self, datafiles):
         src_path = str(datafiles)
         trg_path = str(datafiles)
-        # print(src_path)
         result = sync.get_sync_status(src_path, trg_path)
-        assert 1 == result, "Sync status is not 1"
+        assert 1 == result[0], "Sync status is not 1"
 
     def test_get_dir_size(self):
         pass
