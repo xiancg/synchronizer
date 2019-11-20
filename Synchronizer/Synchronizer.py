@@ -12,12 +12,8 @@ from synchronizer.logger import logger
 # TODO: Revisar pytest-coverage
 # TODO: Revisar 
 
-class Synchronizer(object):
-    def __init__(self):
-        print("Synchronizer created.")
-    
-    def get_sync_status(self, src_path, trg_path):
-        return 1
+def get_sync_status(src_path, trg_path):
+    return 1
 
 # --------------------------------------------------------
 #  Main
