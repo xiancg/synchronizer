@@ -7,6 +7,11 @@ import shutil
 
 from synchronizer.logger import logger
 
+# TODO: Revisar pipenv
+# TODO: Revisar pytest-datafiles
+# TODO: Revisar pytest-coverage
+# TODO: Revisar 
+
 class Synchronizer(object):
     def __init__(self):
         print("Synchronizer created.")
