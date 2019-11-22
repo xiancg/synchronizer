@@ -30,7 +30,7 @@ data_sequence = pytest.mark.datafiles(path_sequence)
 data_texture = pytest.mark.datafiles(path_texture)
 
 
-class TestClass:
+class SyncStatus:
     @data_single_file
     def test_get_sync_status_files(self, datafiles):
         # Same file, ignoring last modification
@@ -91,5 +91,10 @@ class TestClass:
         if result_dif:
             assert result_dif[0] == 2, "Sync status is not 2"
 
-    def test_get_dir_size(self):
+
+class ProcessPaths:
+    def test_process_dirs(self):
+        pass
+
+    def test_process_files(self):
         pass

@@ -1,5 +1,6 @@
 import os
 
+
 def getSequenceFiles(_path):
 	'''
 	Given a file path, find all sibling files for the sequence.
@@ -26,6 +27,7 @@ def getSequenceFiles(_path):
 			return fileList
 
 	return [_path]
+
 
 def get_pattern(_path):
 	'''
@@ -71,6 +73,7 @@ def get_pattern(_path):
 				break
 	return patternBool, namePattern, fileExt, parentFolder, hashStr
 
+
 def is_sequence(_files, namePattern):
 	firstFile = _files[0]
 	lastFile = _files[-1]
@@ -89,12 +92,14 @@ def is_sequence(_files, namePattern):
 
 	return True
 
+
 def _enumerate_sequence(_files, firstFileNumber, lastFileNumber):
 	fileNumber = firstFileNumber
 	fileIndex = 0
 	while fileNumber < lastFileNumber:
 		yield (_files[fileIndex], fileNumber)
 		fileIndex += 1
+
 
 def _getFileExtension(filename):
     ''' Returns extension of this file with no '.' '''
