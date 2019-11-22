@@ -25,8 +25,7 @@ def init_logger():
 def init_file_logger():
     # Formatter
     formatter = logging.Formatter(
-                '[%(asctime)s:%(module)s:%(funcName)s:%(lineno)s:%(levelname)s] %(message)s'
-                )
+                '[%(asctime)s:%(module)s:%(funcName)s:%(lineno)s:%(levelname)s] %(message)s')
     # Log file stream
     userPath = os.path.expanduser("~")
     module_dir = os.path.split(__file__)[0]

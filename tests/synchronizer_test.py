@@ -58,8 +58,38 @@ class TestClass:
         if result_dif:
             assert result_dif[0] == 2, "Sync status is not 2"
 
-    def get_sync_status_dirs(self):
-        pass
+    @data_dir
+    def test_get_sync_status_dirs(self, datafiles):
+        # Same dir, ignoring last modification
+        src_path = str(datafiles)
+        trg_path = path_dir
+        result = sync.get_sync_status(
+            src_path, trg_path,
+            ignore_name=True,
+            ignore_stats=[
+                'st_uid', 'st_gid', 'st_atime',
+                'st_ctime', 'st_mtime'
+                ]
+            )
+        assert result is not None
+        if result:
+            assert result[0] == 1, "Sync status is not 1"
+        # Same dir, one file is different
+        src_path = path_dir
+        dif_trg_path = os.path.join(
+                path_root, "directory", "dif_trg_path"
+                )
+        result_dif = sync.get_sync_status(
+            src_path, dif_trg_path,
+            ignore_name=True,
+            ignore_stats=[
+                'st_uid', 'st_gid', 'st_atime',
+                'st_ctime', 'st_mtime'
+                ]
+            )
+        assert result_dif is not None
+        if result_dif:
+            assert result_dif[0] == 2, "Sync status is not 2"
 
     def test_get_dir_size(self):
         pass

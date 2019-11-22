@@ -14,7 +14,7 @@ from synchronizer.logger import logger
 
 def get_sync_status(
         src_path, trg_path,
-        ignore_file_name=False,
+        ignore_name=False,
         ignore_stats=['st_uid', 'st_gid', 'st_atime', 'st_ctime']):
     """Compare two files or directory paths and return sync status.
     Sync status refers to name and os.stat() comparisons.
@@ -24,7 +24,7 @@ def get_sync_status(
         trg_path {string} -- Target path, file or directory
 
     Keyword Arguments:
-        ignore_file_name {bool} -- Ignores file name comparison
+        ignore_name {bool} -- Ignores name comparison
             (default: {False})
         ignore_stats {list} -- Ignores this list of stats. Names correspond to
             what os.stats() returns, see Python docs.
@@ -38,6 +38,7 @@ def get_sync_status(
             4 = "Source file missing",
             5 = "Target file missing",
             6 = "Different kind of paths (file-dir, dir-file)"
+        None -- Not implemented status comparison
     """
     status_dict = {
             1: "In sync",
@@ -53,26 +54,32 @@ def get_sync_status(
                 src_path, trg_path
                 )
     if os.path.exists(src_path) and os.path.exists(trg_path):
-        if os.path.isfile(src_path) and os.path.isfile(trg_path):
-            compare_files = compare_files_stat(
-                src_path, trg_path, ignore_file_name, ignore_stats
+        same_kind = (os.path.isfile(src_path) and os.path.isfile(trg_path)) or\
+                    (os.path.isdir(src_path) and os.path.isdir(trg_path))
+        if same_kind:
+            what_kind = "Files"
+            if os.path.isdir(src_path) and os.path.isdir(trg_path):
+                what_kind = "Directories"
+            compare_items = compare_stats(
+                src_path, trg_path, ignore_name, ignore_stats
                 )
             result = True
             logger_string += "\tMatch comparison results:\n"
-            for key, value in compare_files.iteritems():
+            for key, value in compare_items.iteritems():
                 logger_string += "\t\t{}: {}\n".format(key, str(value))
                 if not value:
                     # If any of the stats is different, status is Not in sync
                     result = False
             if result:
-                logger.debug("Files in sync.\n{}".format(logger_string))
+                logger.debug("{} in sync.\n{}".format(
+                    what_kind, logger_string)
+                    )
                 return (1, status_dict[1])
             else:
-                logger.debug("Files out of sync.\n{}".format(logger_string))
+                logger.debug("{} out of sync.\n{}".format(
+                    what_kind, logger_string)
+                    )
                 return (2, status_dict[2])
-        elif os.path.isdir(src_path) and os.path.isdir(trg_path):
-            # ! Implement dir comparison functions
-            pass
     elif not os.path.exists(src_path) and not os.path.exists(trg_path):
         logger.debug("Both given paths do not exist.\n{}".format(
             logger_string)
@@ -97,25 +104,25 @@ def get_sync_status(
             )
         return (6, status_dict[6])
     else:
-        logger.error("Sync status function failed.\n{}".format(
+        logger.error("Not implemented status comparison.\n{}".format(
             logger_string)
             )
         return None
 
 
-def compare_files_stat(
+def compare_stats(
         src_path, trg_path,
-        ignore_file_name=False,
+        ignore_name=False,
         ignore_stats=['st_uid', 'st_gid', 'st_atime', 'st_ctime']):
     """Compares stats and file names for two given paths. Returns a
     dict with all comparison results.
 
     Arguments:
-        src_path {string} -- Source path, file
-        trg_path {string} -- Source path, file
+        src_path {string} -- Source path, file or dir
+        trg_path {string} -- Source path, file or dir
 
     Keyword Arguments:
-        ignore_file_name {bool} -- Ignores file name comparison
+        ignore_name {bool} -- Ignores name comparison
             (default: {False})
         ignore_stats {list} -- Ignores this list of stats. Names correspond to
             what os.stats() returns, see Python docs.
@@ -141,10 +148,10 @@ def compare_files_stat(
     result = dict()
     src_file_name = os.path.split(src_path)[1]
     trg_file_name = os.path.split(trg_path)[1]
-    if src_file_name != trg_file_name and not ignore_file_name:
-        result["File Name"] = False
-    elif src_file_name == trg_file_name and not ignore_file_name:
-        result["File Name"] = True
+    if src_file_name != trg_file_name and not ignore_name:
+        result["Name"] = False
+    elif src_file_name == trg_file_name and not ignore_name:
+        result["Name"] = True
 
     for key, value in stats_dict.iteritems():
         if key not in ignore_stats:
@@ -154,13 +161,30 @@ def compare_files_stat(
             else:
                 result[value] = True
 
+    if os.path.isdir(src_path) and os.path.isdir(trg_path):
+        src_dir_size = get_dir_size(src_path)
+        trg_dir_size = get_dir_size(trg_path)
+        result['Dir size'] = False
+        if src_dir_size == trg_dir_size:
+            result['Dir size'] = True
+
     return result
 
 
-def get_dir_size(path):
-    if os.path.isdir(path):
+def get_dir_size(dir_path):
+    """Walks thru given directory to calculate total size.
+
+    Arguments:
+        dir_path {string} -- Directory to measure size.
+
+    Returns:
+        int -- Size of directory in bytes, as reported by the sum
+        of all its files os.stat()
+        None -- If dir_path is not a directory, returns None
+    """
+    if os.path.isdir(dir_path):
         total_size = 0
-        for dirpath, dirnames, filenames in os.walk(path):
+        for dirpath, dirnames, filenames in os.walk(dir_path):
             for f in filenames:
                 fp = os.path.join(dirpath, f)
                 total_size += os.path.getsize(fp)
