@@ -9,10 +9,37 @@ import os
 
 from synchronizer.logger import logger
 
-# TODO: Terminar de implementar el primer test
 # TODO: Configurar CI en GitLab
 
-status_dict = {
+
+def get_sync_status(
+        src_path, trg_path,
+        ignore_file_name=False,
+        ignore_stats=['st_uid', 'st_gid', 'st_atime', 'st_ctime']):
+    """Compare two files or directory paths and return sync status.
+    Sync status refers to name and os.stat() comparisons.
+
+    Arguments:
+        src_path {string} -- Source path, file or directory
+        trg_path {string} -- Target path, file or directory
+
+    Keyword Arguments:
+        ignore_file_name {bool} -- Ignores file name comparison
+            (default: {False})
+        ignore_stats {list} -- Ignores this list of stats. Names correspond to
+            what os.stats() returns, see Python docs.
+            (default: {['st_uid', 'st_gid', 'st_atime', 'st_ctime']})
+
+    Returns:
+        tuple -- (Status code, Status description)
+            1 = "In sync",
+            2 = "Out of sync",
+            3 = "Both paths missing",
+            4 = "Source file missing",
+            5 = "Target file missing",
+            6 = "Different kind of paths (file-dir, dir-file)"
+    """
+    status_dict = {
             1: "In sync",
             2: "Out of sync",
             3: "Both paths missing",
@@ -20,12 +47,8 @@ status_dict = {
             5: "Target file missing",
             6: "Different kind of paths (file-dir, dir-file)"
             }
-
-
-def get_sync_status(
-        src_path, trg_path,
-        ignore_file_name=False,
-        ignore_stats=['st_uid', 'st_gid', 'st_atime', 'st_ctime']):
+    src_path = os.path.normcase(os.path.abspath(src_path))
+    trg_path = os.path.normcase(os.path.abspath(trg_path))
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
                 src_path, trg_path
                 )
@@ -39,6 +62,7 @@ def get_sync_status(
             for key, value in compare_files.iteritems():
                 logger_string += "\t\t{}: {}\n".format(key, str(value))
                 if not value:
+                    # If any of the stats is different, status is Not in sync
                     result = False
             if result:
                 logger.debug("Files in sync.\n{}".format(logger_string))
@@ -83,6 +107,23 @@ def compare_files_stat(
         src_path, trg_path,
         ignore_file_name=False,
         ignore_stats=['st_uid', 'st_gid', 'st_atime', 'st_ctime']):
+    """Compares stats and file names for two given paths. Returns a
+    dict with all comparison results.
+
+    Arguments:
+        src_path {string} -- Source path, file
+        trg_path {string} -- Source path, file
+
+    Keyword Arguments:
+        ignore_file_name {bool} -- Ignores file name comparison
+            (default: {False})
+        ignore_stats {list} -- Ignores this list of stats. Names correspond to
+            what os.stats() returns, see Python docs.
+            (default: {['st_uid', 'st_gid', 'st_atime', 'st_ctime']})
+
+    Returns:
+        dict -- {Stat description: Comparison result bool}
+    """
     src_stat = os.stat(src_path)
     trg_stat = os.stat(trg_path)
     stats_dict = {
