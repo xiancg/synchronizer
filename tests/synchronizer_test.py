@@ -37,6 +37,7 @@ class TestClass:
         src_path = os.path.join(
             str(datafiles), "C_cresta_02__MSH-BUMP.1001.png"
             )
+        trg_path = path_single_file
         result = sync.get_sync_status(
             src_path, trg_path,
             ignore_stats=[
