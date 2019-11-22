@@ -9,22 +9,25 @@ from datetime import date
 
 logger = logging.getLogger(name='synclog')
 
+
 def init_logger():
     logger.setLevel(logging.DEBUG)
-    #Formatter
+    # Formatter
     formatter = logging.Formatter(
                 '[%(asctime)s:%(module)s:%(funcName)s:%(lineno)s:%(levelname)s] %(message)s')
-    #STDOUT stream
+    # STDOUT stream
     streamHandler = logging.StreamHandler(sys.stdout)
     streamHandler.setLevel(logging.DEBUG)
     streamHandler.setFormatter(formatter)
     logger.addHandler(streamHandler)
 
+
 def init_file_logger():
-    #Formatter
+    # Formatter
     formatter = logging.Formatter(
-                '[%(asctime)s:%(module)s:%(funcName)s:%(lineno)s:%(levelname)s] %(message)s')
-    #Log file stream
+                '[%(asctime)s:%(module)s:%(funcName)s:%(lineno)s:%(levelname)s] %(message)s'
+                )
+    # Log file stream
     userPath = os.path.expanduser("~")
     module_dir = os.path.split(__file__)[0]
     config_location = os.path.join(module_dir, "cfg", "config.json")
@@ -36,7 +39,7 @@ def init_file_logger():
     try:
         if not os.path.exists(finalDir):
             os.mkdir(finalDir)
-    except:
+    except OSError:
         pass
 
     today = date.today()
@@ -47,15 +50,7 @@ def init_file_logger():
     fileHandler.setFormatter(formatter)
     logger.addHandler(fileHandler)
 
+
 # * SYNC session events
 init_logger()
 # init_file_logger()
-
-# --------------------------------------------------------
-#  Main
-# --------------------------------------------------------
-def main():
-    pass
-
-if __name__ == "__main__" or 'eclipsePython' in __name__:
-    main()
