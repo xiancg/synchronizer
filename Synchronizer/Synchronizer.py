@@ -3,9 +3,6 @@ from __future__ import absolute_import, print_function
 
 import os
 import shutil
-# import sys
-# import time
-# import filecmp
 
 from synchronizer.logger import logger
 
@@ -28,8 +25,18 @@ def get_sync_status(
         ignore_name {bool} -- Ignores name comparison
             (default: {False})
         ignore_stats {list} -- Ignores this list of stats. Names correspond to
-            what os.stats() returns, see Python docs.
+            what os.stat() returns.
             (default: {['st_uid', 'st_gid', 'st_atime', 'st_ctime']})
+            'st_mode': 'Protection bits'
+            'st_ino': 'inode number'
+            'st_dev': 'Device'
+            'st_nlink': 'Number of hard links'
+            'st_uid': 'User id of owner'
+            'st_gid': 'Group id of owner'
+            'st_size': 'File size'
+            'st_atime': 'Most recent access'
+            'st_mtime': 'Last modification'
+            'st_ctime': 'Most recent metadata change'
 
     Returns:
         tuple -- (Status code, Status description)
@@ -91,8 +98,8 @@ def get_sync_status(
         logger.debug(status + logger_string)
         return 4, status_dict[4]
     elif not os.path.exists(trg_path) and not os.path.exists(trg_path):
-        status = "Source path does exist but target path doesn't.\n"
-        logger.debug(status + logger_string)
+        logger.debug("Source path does exist but target path "
+                     "doesn't.\n".format(logger_string))
         return 5, status_dict[5]
     elif os.path.isfile(src_path) and os.path.isdir(trg_path):
         logger.debug("Different kind of paths (file-dir)\n{}".format(
@@ -223,6 +230,108 @@ def process_paths(src_path, trg_path, force_overwrite=False, **kwargs):
     else:
         success = _process_files(src_path, trg_path, force_overwrite, **kwargs)
     return success
+
+
+def get_sequence_files(file_path):
+    file_path = os.path.realpath(os.path.normcase(file_path))
+    path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
+    parent_folder = path_parts[0]
+    file_with_ext = path_parts[1]
+    file_name, file_ext = file_with_ext.rsplit(".", 1)
+
+    name_pattern, hash_str = get_sequence_name_pattern(file_path)
+
+    if is_sequence(file_path):
+        files_and_dirs = os.listdir(parent_folder)
+        sequence_files = list()
+        for each in files_and_dirs:
+            each_path = os.path.realpath(
+                os.path.normcase(os.path.join(parent_folder, each))
+            )
+            if os.path.isfile(each_path):
+                each_file_name, each_file_ext = each.rsplit(".", 1)
+                if each[:len(name_pattern)] == name_pattern\
+                        and each_file_ext == file_ext:
+                    sequence_files.append(each_path)
+        sequence_files = sorted(sequence_files)
+        return sequence_files
+    return None
+
+
+def is_sequence(file_path):
+    """Looks for sibling files in the same directory. Since two sibling
+    files is enough to make a sequence, if it finds one, it'll stop
+    looking and return True.
+
+    If you want to get a complete list of files, use get_sequence_files()
+
+    Arguments:
+        file_path {string} -- Full path to a file
+
+    Returns:
+        bool -- If another a file is found with the same name pattern,
+        True is returned. No missing files are taken into account.
+    """
+    file_path = os.path.realpath(os.path.normcase(file_path))
+    path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
+    parent_folder = path_parts[0]
+    file_with_ext = path_parts[1]
+    file_name, file_ext = file_with_ext.rsplit(".", 1)
+
+    name_pattern, hash_str = get_sequence_name_pattern(file_path)
+
+    files_and_dirs = os.listdir(parent_folder)
+    result = False
+    for each in files_and_dirs:
+        each_path = os.path.realpath(
+                os.path.normcase(os.path.join(parent_folder, each))
+            )
+        if os.path.isfile(each_path):
+            each_file_name, each_file_ext = each.rsplit(".", 1)
+            if file_path == each_path:
+                continue
+            elif each[:len(name_pattern)] == name_pattern\
+                    and each_file_ext == file_ext:
+                result = True
+                break
+
+    return result
+
+
+def is_sequence_complete(files, name_pattern):
+    first_file = files[0]
+    last_file = files[-1]
+    split_first_file = os.path.split(first_file)[1]
+    first_file_name = split_first_file.rsplit(".", 1)[0]
+    first_file_number = int(first_file_name[len(name_pattern):])
+
+    split_last_file = os.path.split(last_file)[1]
+    last_file_name = split_last_file.rsplit(".", 1)[0]
+    last_file_number = int(last_file_name[len(name_pattern):])
+
+    difference = last_file_number - first_file_number + 1
+
+    if len(files) != difference:
+        return False
+
+    return True
+
+
+def get_sequence_name_pattern(file_path):
+    path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
+    file_with_ext = path_parts[1]
+    file_name, file_ext = file_with_ext.rsplit(".", 1)
+    # Get number of digits in file_name
+    digits_number = 0
+    for each in file_name[::-1]:
+        if each.isdigit() or each == '#':
+            digits_number += 1
+        else:
+            break
+    name_pattern = file_name[:-digits_number]
+    hash_str = "#" * digits_number
+
+    return name_pattern, hash_str
 
 
 def _process_dirs(src_path, trg_path, force_overwrite=False):
@@ -387,105 +496,3 @@ def _process_tx(original_file_path, trg_path_dir, force_overwrite):
             "The specified source TX file doesn't exist: {}".format(
                 src_tx_path)
         )
-
-
-def get_sequence_files(file_path):
-    file_path = os.path.realpath(os.path.normcase(file_path))
-    path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
-    parent_folder = path_parts[0]
-    file_with_ext = path_parts[1]
-    file_name, file_ext = file_with_ext.rsplit(".", 1)
-
-    name_pattern, hash_str = get_sequence_name_pattern(file_path)
-
-    if is_sequence(file_path):
-        files_and_dirs = os.listdir(parent_folder)
-        sequence_files = list()
-        for each in files_and_dirs:
-            each_path = os.path.realpath(
-                os.path.normcase(os.path.join(parent_folder, each))
-            )
-            if os.path.isfile(each_path):
-                each_file_name, each_file_ext = each.rsplit(".", 1)
-                if each[:len(name_pattern)] == name_pattern\
-                        and each_file_ext == file_ext:
-                    sequence_files.append(each_path)
-        sequence_files = sorted(sequence_files)
-        return sequence_files
-    return None
-
-
-def is_sequence(file_path):
-    """Looks for sibling files in the same directory. Since two sibling
-    files is enough to make a sequence, if it finds one, it'll stop
-    looking and return True.
-
-    If you want to get a complete list of files, use get_sequence_files()
-
-    Arguments:
-        file_path {string} -- Full path to a file
-
-    Returns:
-        bool -- If another a file is found with the same name pattern,
-        True is returned. No missing files are taken into account.
-    """
-    file_path = os.path.realpath(os.path.normcase(file_path))
-    path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
-    parent_folder = path_parts[0]
-    file_with_ext = path_parts[1]
-    file_name, file_ext = file_with_ext.rsplit(".", 1)
-
-    name_pattern, hash_str = get_sequence_name_pattern(file_path)
-
-    files_and_dirs = os.listdir(parent_folder)
-    result = False
-    for each in files_and_dirs:
-        each_path = os.path.realpath(
-                os.path.normcase(os.path.join(parent_folder, each))
-            )
-        if os.path.isfile(each_path):
-            each_file_name, each_file_ext = each.rsplit(".", 1)
-            if file_path == each_path:
-                continue
-            elif each[:len(name_pattern)] == name_pattern\
-                    and each_file_ext == file_ext:
-                result = True
-                break
-
-    return result
-
-
-def is_sequence_complete(files, name_pattern):
-    first_file = files[0]
-    last_file = files[-1]
-    split_first_file = os.path.split(first_file)[1]
-    first_file_name = split_first_file.rsplit(".", 1)[0]
-    first_file_number = int(first_file_name[len(name_pattern):])
-
-    split_last_file = os.path.split(last_file)[1]
-    last_file_name = split_last_file.rsplit(".", 1)[0]
-    last_file_number = int(last_file_name[len(name_pattern):])
-
-    difference = last_file_number - first_file_number + 1
-
-    if len(files) != difference:
-        return False
-
-    return True
-
-
-def get_sequence_name_pattern(file_path):
-    path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
-    file_with_ext = path_parts[1]
-    file_name, file_ext = file_with_ext.rsplit(".", 1)
-    # Get number of digits in file_name
-    digits_number = 0
-    for each in file_name[::-1]:
-        if each.isdigit() or each == '#':
-            digits_number += 1
-        else:
-            break
-    name_pattern = file_name[:-digits_number]
-    hash_str = "#" * digits_number
-
-    return name_pattern, hash_str

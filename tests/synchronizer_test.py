@@ -6,13 +6,17 @@ from synchronizer import synchronizer as sync
 import pytest
 import os
 
+
 # --------------------------------------------------------
 #  TESTING DATA
 # --------------------------------------------------------
 path_root = os.path.join(
-            os.path.normcase(os.path.abspath(os.path.split(__file__)[0])),
-            "data"
+                os.path.normcase(
+                    os.path.abspath(os.path.split(__file__)[0])
+                ),
+                "data"
             )
+trg_path_dir = os.path.join(path_root, "trg_path")
 path_dir = os.path.join(path_root, "directory", "src_path")
 path_single_file = os.path.join(
                 path_root, "singlefile",
@@ -24,6 +28,7 @@ path_texture = os.path.join(path_root, "texture", "src_path")
 
 data_root = pytest.mark.datafiles(path_root)
 data_dir = pytest.mark.datafiles(path_dir)
+trg_dir = pytest.mark.datafiles(trg_path_dir)
 data_single_file = pytest.mark.datafiles(path_single_file)
 data_missing = pytest.mark.datafiles(path_missing)
 data_sequence = pytest.mark.datafiles(path_sequence)
@@ -93,9 +98,17 @@ class SyncStatus:
 
 
 class ProcessPaths:
-    @data_dir
+    @trg_dir
     def test_process_dir(self, datafiles):
-        pass
+        src_path = path_dir
+        trg_path = str(datafiles)
+        success = sync.process_paths(src_path, trg_path)
+        assert success == 1, "Failed to process paths"
+        for each in os.listdir(src_path):
+            src_file_path = os.path.join(src_path, each)
+            trg_file_path = os.path.join(trg_path, each)
+            assert os.path.exists(trg_file_path)
+            assert sync.get_sync_status(src_file_path, trg_file_path)[0]
 
     def test_process_file(self):
         pass
