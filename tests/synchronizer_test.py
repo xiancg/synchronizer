@@ -97,13 +97,11 @@ class Test_SyncStatus:
             assert result_dif[0] == 2, "Sync status is not 2"
 
 
-
 class Test_ProcessPaths:
-    @trg_dir
     def test_process_dir(self, datafiles):
         src_path = path_dir
         trg_path = str(datafiles)
-        success = sync.process_paths(src_path, trg_path)
+        success = sync.process_paths(src_path, trg_path, True)
         assert success == 1, "Failed to process paths"
         for each in os.listdir(src_path):
             src_file_path = os.path.join(src_path, each)
@@ -114,10 +112,21 @@ class Test_ProcessPaths:
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
                                   'st_ctime', 'st_mtime']
                 )
-            assert status[0] == 1
+            assert status[0] == 1, "Files are not in sync"
 
-    def test_process_file(self):
-        pass
+    @trg_dir
+    def test_process_file(self, datafiles):
+        src_path = path_single_file
+        trg_path = str(datafiles)
+        trg_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.png")
+        success = sync.process_paths(src_path, trg_path)
+        assert success == 1, "Failed to process paths"
+        status = sync.get_sync_status(
+                    src_path, trg_file_path,
+                    ignore_stats=['st_uid', 'st_gid', 'st_atime',
+                                  'st_ctime', 'st_mtime']
+                )
+        assert status[0] == 1, "File is not in sync"
 
     def test_process_texture_only(self):
         pass

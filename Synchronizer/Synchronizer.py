@@ -98,7 +98,7 @@ def get_sync_status(
         logger.debug(status + logger_string)
         return (4, status_dict[4])
     elif not os.path.exists(trg_path) and not os.path.exists(trg_path):
-        status = "Source path does exist but target path doesn't.\n"
+        status = "Source path exists but target path doesn't.\n"
         logger.debug(status + logger_string)
         return (5, status_dict[5])
     elif os.path.isfile(src_path) and os.path.isdir(trg_path):
@@ -376,9 +376,6 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
     src_path = os.path.normcase(os.path.abspath(src_path))
     trg_path = os.path.normcase(os.path.abspath(trg_path))
 
-    trg_path_parts = os.path.split(trg_path)
-    trg_path_dir = trg_path_parts[0]
-
     skip_non_tx = False
     if kwargs.get("only_tx"):
         skip_non_tx = kwargs.get("only_tx")
@@ -387,7 +384,7 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
     if kwargs.get("include_tx"):
         include_tx = kwargs.get("include_tx")
 
-    dir_success = _create_dir(trg_path_dir)
+    dir_success = _create_dir(trg_path)
     if not dir_success:
         # If directory creation failed, stop execution
         return False
@@ -396,9 +393,9 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
         sequence_files = get_sequence_files(src_path)
         for each in sequence_files:
             if not skip_non_tx:
-                _process_original_files(each, trg_path_dir, force_overwrite)
+                _process_original_files(each, trg_path, force_overwrite)
             if include_tx:
-                _process_tx(each, trg_path_dir, force_overwrite)
+                _process_tx(each, trg_path, force_overwrite)
             if skip_non_tx and not include_tx:
                 logger.warning(
                     "only_tx argument set to True, but include_tx not passed "
@@ -406,9 +403,9 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
                 )
     else:
         if not skip_non_tx:
-            _process_original_files(src_path, trg_path_dir, force_overwrite)
+            _process_original_files(src_path, trg_path, force_overwrite)
         if include_tx:
-            _process_tx(src_path, trg_path_dir, force_overwrite)
+            _process_tx(src_path, trg_path, force_overwrite)
         if skip_non_tx and not include_tx:
             logger.warning(
                 "only_tx argument set to True, but include_tx not passed or "
