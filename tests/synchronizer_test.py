@@ -127,7 +127,9 @@ class Test_ProcessPaths:
     def test_process_file(self, datafiles):
         src_path = path_single_file
         trg_path = str(datafiles)
-        trg_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.png")
+        trg_file_path = os.path.join(
+            trg_path, "C_cresta_02__MSH-BUMP.1001.png"
+        )
         success = sync.process_paths(src_path, trg_path)
         assert success == 1, "Failed to process paths"
         status = sync.get_sync_status(
@@ -141,7 +143,9 @@ class Test_ProcessPaths:
     def test_process_texture_only(self, datafiles):
         src_path = os.path.join(path_texture)
         trg_path = str(datafiles)
-        trg_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.png")
+        trg_file_path = os.path.join(
+            trg_path, "C_cresta_02__MSH-BUMP.1001.png"
+        )
         tx_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.tx")
         success = sync.process_paths(src_path, trg_path, include_tx=False)
         assert success == 1, "Failed to process paths"
@@ -158,7 +162,9 @@ class Test_ProcessPaths:
         src_path = os.path.join(path_texture)
         src_tx_path = src_path.rsplit(".", 1)[0] + ".tx"
         trg_path = str(datafiles)
-        trg_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.png")
+        trg_file_path = os.path.join(
+            trg_path, "C_cresta_02__MSH-BUMP.1001.png"
+        )
         tx_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.tx")
         success = sync.process_paths(src_path, trg_path, include_tx=True)
         assert success == 1, "Failed to process paths"

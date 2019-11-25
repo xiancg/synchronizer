@@ -6,7 +6,6 @@ import shutil
 
 from synchronizer.logger import logger
 
-# TODO: Add ignore_sequence kwarg
 # TODO: argparse?
 # TODO: Configurar CI en GitLab
 
@@ -298,8 +297,9 @@ def get_sequence_files(file_path):
                     sequence_files.append(each_path)
         sequence_files = sorted(sequence_files)
         if not is_sequence_complete(sequence_files, name_pattern):
-            logger.warning("Missing frames on sequence for file_path: {}".format(
-                file_path)
+            logger.warning(
+                "Missing frames on sequence for "
+                "file_path: {}".format(file_path)
             )
         return sequence_files
     return None
@@ -340,7 +340,9 @@ def is_sequence(file_path):
             elif each[:len(name_pattern)].lower() == name_pattern.lower()\
                     and each_file_ext.lower() == file_ext.lower():
                 result = True
-                logger.debug("File belongs to a sequence: {}".format(file_path))
+                logger.debug(
+                    "File belongs to a sequence: {}".format(file_path)
+                )
                 break
 
     return result
@@ -410,7 +412,9 @@ def get_sequence_name_pattern(file_path):
             break
 
     if digits_number == 0:
-        logger.debug("Sequence name pattern not found for {}".format(file_path))
+        logger.debug(
+            "Sequence name pattern not found for {}".format(file_path)
+        )
         return None, None
 
     name_pattern = file_name[:-digits_number]
@@ -490,10 +494,12 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
 
     Optional Keyword Arguments:
         include_tx {bool} -- If tx files are found that match given
-            src_path, they're also copied.
+            src_path, they're also copied. (default: {False})
         only_tx {bool} -- Finds tx files that match given src_path,
             but copies tx only, not src_path. For this flag to work,
-            include_tx must be passed and set to True.
+            include_tx must be passed and set to True. (default: {False})
+        find_sequence {bool} -- If set to False, it'll skip trying to find
+            sequence files for given src_path (default: {True})
 
     Returns:
         [bool] -- If file was processed correctly, True is returned.
@@ -510,12 +516,16 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
     if kwargs.get("include_tx"):
         include_tx = kwargs.get("include_tx")
 
+    find_sequence = True
+    if kwargs.get("find_sequence"):
+        find_sequence = kwargs.get("find_sequence")
+
     dir_success = _create_dir(trg_path)
     if not dir_success:
         # If directory creation failed, stop execution
         return False
 
-    if is_sequence(src_path):
+    if is_sequence(src_path) and find_sequence:
         sequence_files = get_sequence_files(src_path)
         for each in sequence_files:
             if not skip_non_tx:
@@ -524,8 +534,8 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
                 _process_tx(each, trg_path, force_overwrite)
             if skip_non_tx and not include_tx:
                 logger.warning(
-                    "only_tx argument set to True, but include_tx not passed "
-                    "or set to False. Nothing will be processed."
+                    "only_tx argument set to True, but include_tx not "
+                    "passed or set to False. Nothing will be processed."
                 )
     else:
         if not skip_non_tx:
