@@ -229,7 +229,7 @@ def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
             src_path, they're also copied.
         only_tx {bool} -- Finds tx files that match given src_path,
             but copies tx only, not src_path. For this flag to work,
-            include tx must be passed and set to True.
+            include_tx must be passed and set to True.
 
     Returns:
         [bool] -- If files were processed correctly, True is returned.
@@ -419,6 +419,22 @@ def get_sequence_name_pattern(file_path):
 
 
 def _process_dirs(src_path, trg_path, force_overwrite):
+    """Copies src_path to trg_path. Takes directories as source.
+
+    Not meant to be used directly, use process_paths() instead.
+
+    Arguments:
+        src_path {string} -- Path to a directory
+        trg_path {string} -- Path to a directory
+
+    Keyword Arguments:
+        force_overwrite {bool} -- Empties trg_path before copying src_path
+            contents (default: {True})
+
+    Returns:
+        [bool] -- If directories were processed correctly, True is returned.
+            False otherwise.
+    """
     src_path = os.path.normcase(os.path.abspath(src_path))
     trg_path = os.path.normcase(os.path.abspath(trg_path))
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
@@ -458,6 +474,31 @@ def _process_dirs(src_path, trg_path, force_overwrite):
 
 
 def _process_files(src_path, trg_path, force_overwrite, **kwargs):
+    """Copies src_path to trg_path. Takes a file as source.
+    If given file is part of a sequence it'll find and copy the
+    entire sequence of files.
+
+    Not meant to be used directly, use process_paths() instead.
+
+    Arguments:
+        src_path {string} -- Path to a file
+        trg_path {string} -- Path to a directory
+
+    Keyword Arguments:
+        force_overwrite {bool} -- Empties trg_path before copying src_path
+            contents (default: {True})
+
+    Optional Keyword Arguments:
+        include_tx {bool} -- If tx files are found that match given
+            src_path, they're also copied.
+        only_tx {bool} -- Finds tx files that match given src_path,
+            but copies tx only, not src_path. For this flag to work,
+            include_tx must be passed and set to True.
+
+    Returns:
+        [bool] -- If file was processed correctly, True is returned.
+            False otherwise.
+    """
     src_path = os.path.normcase(os.path.abspath(src_path))
     trg_path = os.path.normcase(os.path.abspath(trg_path))
 
@@ -500,6 +541,16 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
 
 
 def _create_dir(dirpath):
+    """Creates given directory.
+
+    Not meant to be used directly, use process_paths() instead.
+
+    Arguments:
+        dirpath {string} -- Full path to a directory that needs to be created.
+
+    Returns:
+        [bool] -- True if directory creation was successful, False otherwise.
+    """
     if not os.path.exists(dirpath):
         try:
             os.makedirs(dirpath)
@@ -522,22 +573,32 @@ def _create_dir(dirpath):
         return True
 
 
-def _process_original_files(src_path, trg_path_dir, force_overwrite):
+def _process_original_files(src_path, trg_path, force_overwrite):
+    """Sometimes no tx are desired, so this only deals with src_path,
+    ignoring tx files if they exist.
+
+    Not meant to be used directly, use process_paths() instead.
+
+    Arguments:
+        src_path {string} -- Path to a file
+        trg_path {string} -- Path to a directory
+        force_overwrite {bool} -- Empties trg_path before copying src_path
+    """
     try:
         src_file_name = os.path.split(src_path)[1]
         trg_file_exists = os.path.exists(
-                os.path.join(trg_path_dir, src_file_name)
+                os.path.join(trg_path, src_file_name)
             )
         if not trg_file_exists \
                 or (trg_file_exists and force_overwrite):
-            shutil.copy2(src_path, trg_path_dir)
+            shutil.copy2(src_path, trg_path)
             logger.debug(
-                "Copied {} to {}".format(src_path, trg_path_dir)
+                "Copied {} to {}".format(src_path, trg_path)
             )
         else:
             logger.debug(
                 "File already existed and force_overwrite was set to False: {}"
-                "\n\t{}".format(os.path.join(trg_path_dir, src_file_name))
+                "\n\t{}".format(os.path.join(trg_path, src_file_name))
             )
     except (IOError, OSError) as why:
         logger.warning(
@@ -546,26 +607,36 @@ def _process_original_files(src_path, trg_path_dir, force_overwrite):
         )
 
 
-def _process_tx(original_file_path, trg_path_dir, force_overwrite):
+def _process_tx(original_file_path, trg_path, force_overwrite):
+    """Takes original texture as parameter and finds adjacent tx file to
+    copy it to trg_path.
+
+    Not meant to be used directly, use process_paths() instead.
+
+    Arguments:
+        src_path {string} -- Path to a file
+        trg_path {string} -- Path to a directory
+        force_overwrite {bool} -- Empties trg_path before copying src_path
+    """
     src_tx_path = original_file_path.rsplit(".", 1)[0] + ".tx"
     if os.path.exists(src_tx_path):
         try:
             src_tx_name = os.path.split(src_tx_path)[1]
             trg_file_exists = os.path.exists(
-                    os.path.join(trg_path_dir, src_tx_name)
+                    os.path.join(trg_path, src_tx_name)
                 )
             if not trg_file_exists \
                     or (trg_file_exists and force_overwrite):
-                shutil.copy2(src_tx_path, trg_path_dir)
+                shutil.copy2(src_tx_path, trg_path)
                 logger.debug(
                     "Copied {} to {}".format(
-                        src_tx_path, trg_path_dir)
+                        src_tx_path, trg_path)
                 )
             else:
                 logger.debug(
                     "File already existed and force_overwrite was set to "
                     "False: {}\n\t{}".format(
-                        os.path.join(trg_path_dir, src_tx_name))
+                        os.path.join(trg_path, src_tx_name))
                 )
         except (IOError, OSError) as why:
             logger.warning(
