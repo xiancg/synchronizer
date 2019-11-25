@@ -22,7 +22,10 @@ path_single_file = os.path.join(
                     path_root, "singlefile",
                     "src_path", "C_cresta_02__MSH-BUMP.1001.png"
                 )
-path_missing = os.path.join(path_root, "missingframes", "src_path")
+path_missing = os.path.join(
+        path_root, "missingframes", "src_path",
+        "C_cresta_02__MSH-BUMP.1001.png"
+    )
 path_sequence = os.path.join(
         path_root, "sequence", "src_path",
         "C_cresta_02__MSH-BUMP.1001.png"
@@ -199,8 +202,14 @@ class Test_ProcessPaths:
         files_copied = os.listdir(trg_path)
         assert len(files_copied) == 5, "Sequence didn't copy correctly"
 
-    def test_sequence_with_missing_frames(self):
-        pass
+    @trg_dir
+    def test_sequence_with_missing_frames(self, datafiles):
+        src_path = path_missing
+        trg_path = str(datafiles)
+        success = sync.process_paths(src_path, trg_path)
+        assert success == 1, "Failed to process paths"
+        files_copied = os.listdir(trg_path)
+        assert len(files_copied) == 8, "Sequence didn't copy correctly"
 
     def test_sequence_with_tx(self):
         pass

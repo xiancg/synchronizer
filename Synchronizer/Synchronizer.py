@@ -252,6 +252,10 @@ def get_sequence_files(file_path):
                         and each_file_ext.lower() == file_ext.lower():
                     sequence_files.append(each_path)
         sequence_files = sorted(sequence_files)
+        if not is_sequence_complete(sequence_files, name_pattern):
+            logger.warning("Missing frames on sequence for file_path: {}".format(
+                file_path)
+            )
         return sequence_files
     return None
 
