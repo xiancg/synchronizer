@@ -93,8 +93,24 @@ class SyncStatus:
 
 
 class ProcessPaths:
-    def test_process_dirs(self):
+    @data_dir
+    def test_process_dir(self, datafiles):
         pass
 
-    def test_process_files(self):
+    def test_process_file(self):
+        pass
+
+    def test_process_texture_only(self):
+        pass
+
+    def test_process_texture_with_tx(self):
+        pass
+
+    def test_process_tx_only(self):
+        pass
+
+    def test_sequence_with_missing_frames(self):
+        pass
+
+    def test_sequence_with_tx(self):
         pass

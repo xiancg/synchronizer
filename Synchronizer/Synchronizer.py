@@ -132,8 +132,8 @@ def compare_stats(
     Returns:
         dict -- {Stat description: Comparison result bool}
     """
-    src_stat = os.stat(src_path)
-    trg_stat = os.stat(trg_path)
+    src_stat = os.stat(src_path)  # noqa: F841
+    trg_stat = os.stat(trg_path)  # noqa: F841
     stats_dict = {
         'st_mode': 'Protection bits',
         'st_ino': 'inode number',
@@ -250,15 +250,15 @@ def _process_dirs(src_path, trg_path, force_overwrite=False):
             )
             success = True
         else:
-            logger.debug(
-                "Target already existed and force_overwrite was set to False.\n{}".format(
-                    logger_string)
+            logger.warning(
+                "Target already existed and force_overwrite was set to False."
+                "\n{}".format(logger_string)
             )
             success = False
-    except IOError:
+    except (IOError, OSError) as why:
         logger.error(
-            "IOError: Operation failed.\n{}".format(
-                logger_string)
+            "System Error while processing directories.\n{}\n{}".format(
+                logger_string, why)
             )
         success = False
     return success
@@ -267,79 +267,126 @@ def _process_dirs(src_path, trg_path, force_overwrite=False):
 def _process_files(src_path, trg_path, force_overwrite=False, **kwargs):
     src_path = os.path.normcase(os.path.abspath(src_path))
     trg_path = os.path.normcase(os.path.abspath(trg_path))
-    logger_string = "\tSource: {}\n\tTarget: {}\n".format(
-                src_path, trg_path
-                )
-    success = False
 
     trg_path_parts = os.path.split(trg_path)
     trg_path_dir = trg_path_parts[0]
-    trg_path_file = trg_path_parts[1]
 
     skip_non_tx = False
-    if kwargs.get("TX_only"):
-        skip_non_tx = kwargs.get("TX_only")
+    if kwargs.get("only_tx"):
+        skip_non_tx = kwargs.get("only_tx")
+
+    include_tx = False
+    if kwargs.get("include_tx"):
+        include_tx = kwargs.get("include_tx")
+
+    dir_success = _create_dir(trg_path_dir)
+    if not dir_success:
+        # If directory creation failed, stop execution
+        return False
 
     if is_sequence(src_path):
-        if not os.path.exists(trg_path_dir):
-            try:
-                os.makedirs(trg_path_dir)
-                logger.debug(
-                    "Directory structure created: {}".format(
-                        trg_path_dir)
-                    )
-            except OSError:
-                logger.debug(
-                    "Directory structure couldn't be created: {}".format(
-                        trg_path_dir)
-                    )
-                success = False
+        sequence_files = get_sequence_files(src_path)
+        for each in sequence_files:
+            if not skip_non_tx:
+                _process_original_files(each, trg_path_dir, force_overwrite)
+            if include_tx:
+                _process_tx(each, trg_path_dir, force_overwrite)
+            if skip_non_tx and not include_tx:
+                logger.warning(
+                    "only_tx argument set to True, but include_tx not passed "
+                    "or set to False. Nothing will be processed."
+                )
+    else:
+        if not skip_non_tx:
+            _process_original_files(src_path, trg_path_dir, force_overwrite)
+        if include_tx:
+            _process_tx(src_path, trg_path_dir, force_overwrite)
+        if skip_non_tx and not include_tx:
+            logger.warning(
+                "only_tx argument set to True, but include_tx not passed or "
+                "set to False. Nothing will be processed."
+            )
+    return True
+
+
+def _create_dir(dirpath):
+    if not os.path.exists(dirpath):
+        try:
+            os.makedirs(dirpath)
+            logger.debug(
+                "Directory structure created: {}".format(
+                    dirpath)
+            )
+            return True
+        except (IOError, OSError) as why:
+            logger.error(
+                "Directory structure couldn't be created: {}\n{}".format(
+                    dirpath, why)
+            )
+            return False
+    else:
+        logger.debug(
+            "Directory structure already existed: {}".format(
+                dirpath)
+        )
+        return True
+
+
+def _process_original_files(src_path, trg_path_dir, force_overwrite):
+    try:
+        src_file_name = os.path.split(src_path)[1]
+        trg_file_exists = os.path.exists(
+                os.path.join(trg_path_dir, src_file_name)
+            )
+        if not trg_file_exists \
+                or (trg_file_exists and force_overwrite):
+            shutil.copy2(src_path, trg_path_dir)
+            logger.debug(
+                "Copied {} to {}".format(src_path, trg_path_dir)
+            )
         else:
             logger.debug(
-                "Directory structure already existed: {}".format(
-                    trg_path_dir)
+                "File already existed and force_overwrite was set to False: {}"
+                "\n\t{}".format(os.path.join(trg_path_dir, src_file_name))
+            )
+    except (IOError, OSError) as why:
+        logger.warning(
+            "System Error while processing source file: {}\n{}".format(
+                src_path, why)
+        )
+
+
+def _process_tx(original_file_path, trg_path_dir, force_overwrite):
+    src_tx_path = original_file_path.rsplit(".", 1)[0] + ".tx"
+    if os.path.exists(src_tx_path):
+        try:
+            src_tx_name = os.path.split(src_tx_path)[1]
+            trg_file_exists = os.path.exists(
+                    os.path.join(trg_path_dir, src_tx_name)
                 )
-
-        sequence_files = get_sequence_files(src_path)
-        # Copy files
-        for each in sequence_files:
-            # Copy .tx only
-            if not skip_non_tx:
-                try:
-                    seq_file_name = os.path.split(each)[1]
-                    trg_file_exists = os.path.exists(
-                            os.path.join(trg_path_dir, seq_file_name)
-                        )
-                    if not trg_file_exists:
-                        shutil.copy2(each, trg_path_dir)
-                        logger.debug(
-                            "Copied {} to {}".format(each, trg_path_dir)
-                        )
-                    elif trg_file_exists and force_overwrite:
-                        shutil.copy2(each, trg_path_dir)
-                        logger.debug(
-                            "Copied {} to {}".format(each, trg_path_dir)
-                        )
-                    else:
-                        logger.debug(
-                            "File already existed and force_overwrite was set to False:\n\t{}".format(
-                                os.path.join(trg_path_dir, seq_file_name)
-                            )
-                        )
-                except IOError:
-                    logger.debug(
-                            "The specified source doesn't exist: {}".format(
-                                each)
-                        )
-                    success = False
-
-            # Copy .tx
-            if kwargs.get("include_TX"):
-                src_tx_path = each.rsplit(".", 1)[0] + ".tx"
-                if os.path.exists(src_tx_path):
-                    # ! VOY ACA, TENGO QUE VER SI PUEDO REDUCIR COSAS REDUDANTES
-                    # ! CON LAS COSAS QUE SIGUEN YQ UE ESTAN EN EL ORIGINAL
-    return success
+            if not trg_file_exists \
+                    or (trg_file_exists and force_overwrite):
+                shutil.copy2(src_tx_path, trg_path_dir)
+                logger.debug(
+                    "Copied {} to {}".format(
+                        src_tx_path, trg_path_dir)
+                )
+            else:
+                logger.debug(
+                    "File already existed and force_overwrite was set to "
+                    "False: {}\n\t{}".format(
+                        os.path.join(trg_path_dir, src_tx_name))
+                )
+        except (IOError, OSError) as why:
+            logger.warning(
+                "System Error while processing source tx file: {}\n{}".format(
+                    src_tx_path, why)
+            )
+    else:
+        logger.warning(
+            "The specified source TX file doesn't exist: {}".format(
+                src_tx_path)
+        )
 
 
 def get_sequence_files(file_path):
@@ -376,7 +423,7 @@ def is_sequence(file_path):
     If you want to get a complete list of files, use get_sequence_files()
 
     Arguments:
-        file_path {string} -- [description]
+        file_path {string} -- Full path to a file
 
     Returns:
         bool -- If another a file is found with the same name pattern,
