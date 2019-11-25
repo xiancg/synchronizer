@@ -233,14 +233,13 @@ def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
 
 def get_sequence_files(file_path):
     file_path = os.path.realpath(os.path.normcase(file_path))
-    path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
+    path_parts = os.path.split(file_path)
     parent_folder = path_parts[0]
     file_with_ext = path_parts[1]
     file_name, file_ext = file_with_ext.rsplit(".", 1)
 
-    name_pattern, hash_str = get_sequence_name_pattern(file_path)
-
     if is_sequence(file_path):
+        name_pattern, hash_str = get_sequence_name_pattern(file_path)
         files_and_dirs = os.listdir(parent_folder)
         sequence_files = list()
         for each in files_and_dirs:
@@ -249,8 +248,8 @@ def get_sequence_files(file_path):
             )
             if os.path.isfile(each_path):
                 each_file_name, each_file_ext = each.rsplit(".", 1)
-                if each[:len(name_pattern)] == name_pattern\
-                        and each_file_ext == file_ext:
+                if each[:len(name_pattern)].lower() == name_pattern.lower()\
+                        and each_file_ext.lower() == file_ext.lower():
                     sequence_files.append(each_path)
         sequence_files = sorted(sequence_files)
         return sequence_files
@@ -272,12 +271,12 @@ def is_sequence(file_path):
         True is returned. No missing files are taken into account.
     """
     file_path = os.path.realpath(os.path.normcase(file_path))
-    path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
-    parent_folder = path_parts[0]
-    file_with_ext = path_parts[1]
+    parent_folder, file_with_ext = os.path.split(file_path)
     file_name, file_ext = file_with_ext.rsplit(".", 1)
 
     name_pattern, hash_str = get_sequence_name_pattern(file_path)
+    if not (name_pattern or hash_str):
+        return False
 
     files_and_dirs = os.listdir(parent_folder)
     result = False
@@ -289,9 +288,10 @@ def is_sequence(file_path):
             each_file_name, each_file_ext = each.rsplit(".", 1)
             if file_path == each_path:
                 continue
-            elif each[:len(name_pattern)] == name_pattern\
-                    and each_file_ext == file_ext:
+            elif each[:len(name_pattern)].lower() == name_pattern.lower()\
+                    and each_file_ext.lower() == file_ext.lower():
                 result = True
+                logger.debug("File belongs to a sequence: {}".format(file_path))
                 break
 
     return result
@@ -327,6 +327,11 @@ def get_sequence_name_pattern(file_path):
             digits_number += 1
         else:
             break
+
+    if digits_number == 0:
+        logger.debug("Sequence name pattern not found for {}".format(file_path))
+        return None, None
+
     name_pattern = file_name[:-digits_number]
     hash_str = "#" * digits_number
 
