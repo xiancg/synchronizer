@@ -69,7 +69,7 @@ def get_sync_status(
             if os.path.isdir(src_path) and os.path.isdir(trg_path):
                 what_kind = "Directories"
             compare_items = compare_stats(
-                src_path, trg_path, ignore_name, ignore_stats
+                    src_path, trg_path, ignore_name, ignore_stats
                 )
             result = True
             logger_string += "\tMatch comparison results:\n"
@@ -82,35 +82,35 @@ def get_sync_status(
                 logger.debug("{} in sync.\n{}".format(
                     what_kind, logger_string)
                     )
-                return 1, status_dict[1]
+                return (1, status_dict[1])
             else:
                 logger.debug("{} out of sync.\n{}".format(
                     what_kind, logger_string)
                     )
-                return 2, status_dict[2]
+                return (2, status_dict[2])
     elif not os.path.exists(src_path) and not os.path.exists(trg_path):
         logger.debug("Both given paths do not exist.\n{}".format(
             logger_string)
             )
-        return 3, status_dict[3]
+        return (3, status_dict[3])
     elif not os.path.exists(src_path) and os.path.exists(trg_path):
         status = "Source path does not exist but target path does.\n"
         logger.debug(status + logger_string)
-        return 4, status_dict[4]
+        return (4, status_dict[4])
     elif not os.path.exists(trg_path) and not os.path.exists(trg_path):
-        logger.debug("Source path does exist but target path "
-                     "doesn't.\n".format(logger_string))
-        return 5, status_dict[5]
+        status = "Source path does exist but target path doesn't.\n"
+        logger.debug(status + logger_string)
+        return (5, status_dict[5])
     elif os.path.isfile(src_path) and os.path.isdir(trg_path):
         logger.debug("Different kind of paths (file-dir)\n{}".format(
             logger_string)
             )
-        return 6, status_dict[6]
+        return (6, status_dict[6])
     elif os.path.isdir(trg_path) and os.path.isfile(src_path):
         logger.debug("Different kind of paths (dir-file)\n{}".format(
             logger_string)
             )
-        return 6, status_dict[6]
+        return (6, status_dict[6])
     else:
         logger.error("Not implemented status comparison.\n{}".format(
             logger_string)
@@ -197,11 +197,10 @@ def get_dir_size(dir_path):
                 fp = os.path.join(dirpath, f)
                 total_size += os.path.getsize(fp)
         return total_size
-    else:
-        return None
+    return None
 
 
-def process_paths(src_path, trg_path, force_overwrite=False, **kwargs):
+def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
     src_path = os.path.normcase(os.path.abspath(src_path))
     trg_path = os.path.normcase(os.path.abspath(trg_path))
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
@@ -334,7 +333,7 @@ def get_sequence_name_pattern(file_path):
     return name_pattern, hash_str
 
 
-def _process_dirs(src_path, trg_path, force_overwrite=False):
+def _process_dirs(src_path, trg_path, force_overwrite):
     src_path = os.path.normcase(os.path.abspath(src_path))
     trg_path = os.path.normcase(os.path.abspath(trg_path))
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
@@ -363,7 +362,7 @@ def _process_dirs(src_path, trg_path, force_overwrite=False):
                 "Target already existed and force_overwrite was set to False."
                 "\n{}".format(logger_string)
             )
-            success = False
+            success = True
     except (IOError, OSError) as why:
         logger.error(
             "System Error while processing directories.\n{}\n{}".format(
@@ -373,7 +372,7 @@ def _process_dirs(src_path, trg_path, force_overwrite=False):
     return success
 
 
-def _process_files(src_path, trg_path, force_overwrite=False, **kwargs):
+def _process_files(src_path, trg_path, force_overwrite, **kwargs):
     src_path = os.path.normcase(os.path.abspath(src_path))
     trg_path = os.path.normcase(os.path.abspath(trg_path))
 

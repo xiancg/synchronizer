@@ -19,8 +19,8 @@ path_root = os.path.join(
 trg_path_dir = os.path.join(path_root, "trg_path")
 path_dir = os.path.join(path_root, "directory", "src_path")
 path_single_file = os.path.join(
-                path_root, "singlefile",
-                "src_path", "C_cresta_02__MSH-BUMP.1001.png"
+                    path_root, "singlefile",
+                    "src_path", "C_cresta_02__MSH-BUMP.1001.png"
                 )
 path_missing = os.path.join(path_root, "missingframes", "src_path")
 path_sequence = os.path.join(path_root, "sequence", "src_path")
@@ -35,7 +35,7 @@ data_sequence = pytest.mark.datafiles(path_sequence)
 data_texture = pytest.mark.datafiles(path_texture)
 
 
-class SyncStatus:
+class Test_SyncStatus:
     @data_single_file
     def test_get_sync_status_files(self, datafiles):
         # Same file, ignoring last modification
@@ -97,7 +97,8 @@ class SyncStatus:
             assert result_dif[0] == 2, "Sync status is not 2"
 
 
-class ProcessPaths:
+
+class Test_ProcessPaths:
     @trg_dir
     def test_process_dir(self, datafiles):
         src_path = path_dir
@@ -107,8 +108,13 @@ class ProcessPaths:
         for each in os.listdir(src_path):
             src_file_path = os.path.join(src_path, each)
             trg_file_path = os.path.join(trg_path, each)
-            assert os.path.exists(trg_file_path)
-            assert sync.get_sync_status(src_file_path, trg_file_path)[0]
+            assert os.path.exists(trg_file_path) == 1
+            status = sync.get_sync_status(
+                    src_file_path, trg_file_path,
+                    ignore_stats=['st_uid', 'st_gid', 'st_atime',
+                                  'st_ctime', 'st_mtime']
+                )
+            assert status[0] == 1
 
     def test_process_file(self):
         pass
