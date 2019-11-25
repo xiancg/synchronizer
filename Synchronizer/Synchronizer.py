@@ -6,6 +6,7 @@ import shutil
 
 from synchronizer.logger import logger
 
+# TODO: Add ignore_sequence kwarg
 # TODO: argparse?
 # TODO: Configurar CI en GitLab
 
@@ -133,8 +134,18 @@ def compare_stats(
         ignore_name {bool} -- Ignores name comparison
             (default: {False})
         ignore_stats {list} -- Ignores this list of stats. Names correspond to
-            what os.stats() returns, see Python docs.
+            what os.stat() returns.
             (default: {['st_uid', 'st_gid', 'st_atime', 'st_ctime']})
+            'st_mode': 'Protection bits'
+            'st_ino': 'inode number'
+            'st_dev': 'Device'
+            'st_nlink': 'Number of hard links'
+            'st_uid': 'User id of owner'
+            'st_gid': 'Group id of owner'
+            'st_size': 'File size'
+            'st_atime': 'Most recent access'
+            'st_mtime': 'Last modification'
+            'st_ctime': 'Most recent metadata change'
 
     Returns:
         dict -- {Stat description: Comparison result bool}
@@ -201,6 +212,29 @@ def get_dir_size(dir_path):
 
 
 def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
+    """Copies src_path to trg_path. Takes both files and directories
+    as source. If given source is a file and it's part of a sequence
+    it'll find and copy the entire sequence of files.
+
+    Arguments:
+        src_path {string} -- Path to a file or directory
+        trg_path {string} -- Path to a directory
+
+    Keyword Arguments:
+        force_overwrite {bool} -- Empties trg_path before copying src_path
+            contents (default: {True})
+
+    Optional Keyword Arguments:
+        include_tx {bool} -- If tx files are found that match given
+            src_path, they're also copied.
+        only_tx {bool} -- Finds tx files that match given src_path,
+            but copies tx only, not src_path. For this flag to work,
+            include tx must be passed and set to True.
+
+    Returns:
+        [bool] -- If files were processed correctly, True is returned.
+            False otherwise.
+    """
     src_path = os.path.normcase(os.path.abspath(src_path))
     trg_path = os.path.normcase(os.path.abspath(trg_path))
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
@@ -232,6 +266,17 @@ def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
 
 
 def get_sequence_files(file_path):
+    """Find and return all files that are part of a sequence matching file_path.
+    If no sequence found, returns None. Two files are enough to make
+    a sequence, even if they're not sequential.
+
+    Arguments:
+        file_path {string} -- Path to a file
+
+    Returns:
+        [list] -- List of sequence files including given file_path.
+            None if sequence is not found.
+    """
     file_path = os.path.realpath(os.path.normcase(file_path))
     path_parts = os.path.split(file_path)
     parent_folder = path_parts[0]
@@ -239,7 +284,7 @@ def get_sequence_files(file_path):
     file_name, file_ext = file_with_ext.rsplit(".", 1)
 
     if is_sequence(file_path):
-        name_pattern, hash_str = get_sequence_name_pattern(file_path)
+        name_pattern = get_sequence_name_pattern(file_path)
         files_and_dirs = os.listdir(parent_folder)
         sequence_files = list()
         for each in files_and_dirs:
@@ -262,8 +307,8 @@ def get_sequence_files(file_path):
 
 def is_sequence(file_path):
     """Looks for sibling files in the same directory. Since two sibling
-    files is enough to make a sequence, if it finds one, it'll stop
-    looking and return True.
+    files is enough to make a sequence, even if they are not sequential, if it
+    finds one, it'll stop looking and return True.
 
     If you want to get a complete list of files, use get_sequence_files()
 
@@ -272,14 +317,14 @@ def is_sequence(file_path):
 
     Returns:
         bool -- If another a file is found with the same name pattern,
-        True is returned. No missing files are taken into account.
+            True is returned. Missing files are taken into account.
     """
     file_path = os.path.realpath(os.path.normcase(file_path))
     parent_folder, file_with_ext = os.path.split(file_path)
     file_name, file_ext = file_with_ext.rsplit(".", 1)
 
-    name_pattern, hash_str = get_sequence_name_pattern(file_path)
-    if not (name_pattern or hash_str):
+    name_pattern = get_sequence_name_pattern(file_path)
+    if not name_pattern:
         return False
 
     files_and_dirs = os.listdir(parent_folder)
@@ -302,6 +347,23 @@ def is_sequence(file_path):
 
 
 def is_sequence_complete(files, name_pattern):
+    """Evaluates a list of sequence files, if the sequence is missing one
+    or more files, returns False. If sequence is complete, returns True
+
+    Arguments:
+        files {list} -- List of complete file paths to a file sequence.
+            You could use get_sequence_files() to get a list.
+        name_pattern {string} -- As returned by get_sequence_name_pattern(),
+            It's a string consisting of the base name for the file without
+            trailing digits.
+            (i.e.:
+                File: 'C_cresta_02__MSH-BUMP.1001.png'
+                Name Pattern: 'C_cresta_02__MSH-BUMP.')
+
+    Returns:
+        [bool] -- True if sequence is complete. False otherwise.
+    """
+    files = sorted(files)
     first_file = files[0]
     last_file = files[-1]
     split_first_file = os.path.split(first_file)[1]
@@ -321,6 +383,21 @@ def is_sequence_complete(files, name_pattern):
 
 
 def get_sequence_name_pattern(file_path):
+    """Finds the name pattern and number of digits that make the name
+    of the file. Both elements are used by other functions to identify
+    file sequences.
+
+    Arguments:
+        file_path {string} -- Full path to a file
+
+    Returns:
+        [string] -- name_pattern
+            It's a string consisting of the base name for the file
+            without trailing digits.
+            (i.e.:
+                File: 'C_cresta_02__MSH-BUMP.1001.png'
+                Name Pattern: 'C_cresta_02__MSH-BUMP.')
+    """
     path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
     file_with_ext = path_parts[1]
     file_name, file_ext = file_with_ext.rsplit(".", 1)
@@ -337,9 +414,8 @@ def get_sequence_name_pattern(file_path):
         return None, None
 
     name_pattern = file_name[:-digits_number]
-    hash_str = "#" * digits_number
 
-    return name_pattern, hash_str
+    return name_pattern
 
 
 def _process_dirs(src_path, trg_path, force_overwrite):
