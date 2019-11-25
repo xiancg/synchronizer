@@ -30,18 +30,18 @@ path_sequence = os.path.join(
         path_root, "sequence", "src_path",
         "C_cresta_02__MSH-BUMP.1001.png"
     )
+path_sequence_tx = os.path.join(
+        path_root, "sequence_with_tx", "src_path",
+        "C_cresta_02__MSH-BUMP.1001.png"
+    )
 path_texture = os.path.join(
                 path_root,
                 "texture", "src_path",
                 "C_cresta_02__MSH-BUMP.1001.png")
 
-data_root = pytest.mark.datafiles(path_root)
 data_dir = pytest.mark.datafiles(path_dir)
 trg_dir = pytest.mark.datafiles(trg_path_dir)
 data_single_file = pytest.mark.datafiles(path_single_file)
-data_missing = pytest.mark.datafiles(path_missing)
-data_sequence = pytest.mark.datafiles(path_sequence)
-data_texture = pytest.mark.datafiles(path_texture)
 
 
 class Test_SyncStatus:
@@ -211,5 +211,11 @@ class Test_ProcessPaths:
         files_copied = os.listdir(trg_path)
         assert len(files_copied) == 8, "Sequence didn't copy correctly"
 
-    def test_sequence_with_tx(self):
-        pass
+    @trg_dir
+    def test_sequence_with_tx(self, datafiles):
+        src_path = path_sequence_tx
+        trg_path = str(datafiles)
+        success = sync.process_paths(src_path, trg_path, include_tx=True)
+        assert success == 1, "Failed to process paths"
+        files_copied = os.listdir(trg_path)
+        assert len(files_copied) == 10, "Sequence didn't copy correctly"
