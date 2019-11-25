@@ -147,8 +147,27 @@ class Test_ProcessPaths:
         assert status[0] == 1, "File is not in sync"
         assert os.path.exists(tx_file_path) == 0, "tx copied, but it shouldn't have been."
 
-    def test_process_texture_with_tx(self):
-        pass
+    @trg_dir
+    def test_process_texture_with_tx(self, datafiles):
+        src_path = os.path.join(path_texture)
+        src_tx_path = src_path.rsplit(".", 1)[0] + ".tx"
+        trg_path = str(datafiles)
+        trg_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.png")
+        tx_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.tx")
+        success = sync.process_paths(src_path, trg_path, include_tx=True)
+        assert success == 1, "Failed to process paths"
+        status = sync.get_sync_status(
+                    src_path, trg_file_path,
+                    ignore_stats=['st_uid', 'st_gid', 'st_atime',
+                                  'st_ctime', 'st_mtime']
+                )
+        assert status[0] == 1, "File is not in sync"
+        status = sync.get_sync_status(
+                    src_tx_path, tx_file_path,
+                    ignore_stats=['st_uid', 'st_gid', 'st_atime',
+                                  'st_ctime', 'st_mtime']
+                )
+        assert status[0] == 1, "File is not in sync"
 
     def test_process_tx_only(self):
         pass
