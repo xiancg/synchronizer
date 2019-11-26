@@ -417,6 +417,7 @@ def get_sequence_name_pattern(file_path):
             (i.e.:
                 File: 'C_cresta_02__MSH-BUMP.1001.png'
                 Name Pattern: 'C_cresta_02__MSH-BUMP.')
+        None -- If no digits can be found in the name, returns None
     """
     path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
     file_with_ext = path_parts[1]
@@ -433,7 +434,7 @@ def get_sequence_name_pattern(file_path):
         logger.debug(
             "Sequence name pattern not found for {}".format(file_path)
         )
-        return None, None
+        return None
 
     name_pattern = file_name[:-digits_number]
 
@@ -588,7 +589,7 @@ def _create_dir(dirpath):
             )
             return True
         except (IOError, OSError) as why:
-            logger.error(
+            logger.critical(
                 "Directory structure couldn't be created: {}\n{}".format(
                     dirpath, why)
             )
@@ -612,6 +613,7 @@ def _process_original_files(src_path, trg_path, force_overwrite):
         trg_path {string} -- Path to a directory
         force_overwrite {bool} -- Empties trg_path before copying src_path
     """
+    success = False
     try:
         src_file_name = os.path.split(src_path)[1]
         trg_file_exists = os.path.exists(
@@ -623,16 +625,20 @@ def _process_original_files(src_path, trg_path, force_overwrite):
             logger.debug(
                 "Copied {} to {}".format(src_path, trg_path)
             )
+            success = True
         else:
             logger.debug(
-                "File already existed and force_overwrite was set to False: {}"
+                "File already existed and force_overwrite was set to False: "
                 "\n\t{}".format(os.path.join(trg_path, src_file_name))
             )
+            success = True
     except (IOError, OSError) as why:
         logger.warning(
             "System Error while processing source file: {}\n{}".format(
                 src_path, why)
         )
+        success = False
+    return success
 
 
 def _process_tx(original_file_path, trg_path, force_overwrite):

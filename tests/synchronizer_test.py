@@ -5,6 +5,7 @@ from synchronizer import synchronizer as sync
 
 import pytest
 import os
+import shutil
 
 
 # --------------------------------------------------------
@@ -162,7 +163,7 @@ class Test_SyncStatus:
         result = sync.compare_stats(
             src_path, trg_path, ignore_name=False
             )
-        assert result["Name"] == 0
+        assert result["Name"] is False
 
     def test_get_dir_size_not_dir(self):
         dir_path = path_single_file
@@ -175,11 +176,11 @@ class Test_ProcessPaths:
         src_path = path_dir
         trg_path = str(datafiles)
         success = sync.process_paths(src_path, trg_path, True)
-        assert success == 1, "Failed to process paths"
+        assert success is True, "Failed to process paths"
         for each in os.listdir(src_path):
             src_file_path = os.path.join(src_path, each)
             trg_file_path = os.path.join(trg_path, each)
-            assert os.path.exists(trg_file_path) == 1
+            assert os.path.exists(trg_file_path) is True
             status = sync.get_sync_status(
                     src_file_path, trg_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
@@ -195,7 +196,7 @@ class Test_ProcessPaths:
             trg_path, "C_cresta_02__MSH-BUMP.1001.png"
         )
         success = sync.process_paths(src_path, trg_path)
-        assert success == 1, "Failed to process paths"
+        assert success is True, "Failed to process paths"
         status = sync.get_sync_status(
                     src_path, trg_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
@@ -212,7 +213,7 @@ class Test_ProcessPaths:
         )
         tx_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.tx")
         success = sync.process_paths(src_path, trg_path, include_tx=False)
-        assert success == 1, "Failed to process paths"
+        assert success is True, "Failed to process paths"
         status = sync.get_sync_status(
                     src_path, trg_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
@@ -220,7 +221,7 @@ class Test_ProcessPaths:
                 )
         assert status[0] == 1, "File is not in sync"
         tx_file_exists = os.path.exists(tx_file_path)
-        assert tx_file_exists == 0, "tx shouldn't have been copied."
+        assert tx_file_exists is False, "tx shouldn't have been copied."
 
     @trg_dir
     def test_process_texture_with_tx(self, datafiles):
@@ -232,7 +233,7 @@ class Test_ProcessPaths:
         )
         tx_file_path = os.path.join(trg_path, "C_cresta_02__MSH-BUMP.1001.tx")
         success = sync.process_paths(src_path, trg_path, include_tx=True)
-        assert success == 1, "Failed to process paths"
+        assert success is True, "Failed to process paths"
         status = sync.get_sync_status(
                     src_path, trg_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
@@ -256,7 +257,7 @@ class Test_ProcessPaths:
                 src_path, trg_path,
                 include_tx=True, only_tx=True
             )
-        assert success == 1, "Failed to process paths"
+        assert success is True, "Failed to process paths"
         status = sync.get_sync_status(
                     src_tx_path, tx_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
@@ -269,7 +270,7 @@ class Test_ProcessPaths:
         src_path = path_sequence
         trg_path = str(datafiles)
         success = sync.process_paths(src_path, trg_path)
-        assert success == 1, "Failed to process paths"
+        assert success is True, "Failed to process paths"
         files_copied = os.listdir(trg_path)
         assert len(files_copied) == 5, "Sequence didn't copy correctly"
 
@@ -278,7 +279,7 @@ class Test_ProcessPaths:
         src_path = path_missing
         trg_path = str(datafiles)
         success = sync.process_paths(src_path, trg_path)
-        assert success == 1, "Failed to process paths"
+        assert success is True, "Failed to process paths"
         files_copied = os.listdir(trg_path)
         assert len(files_copied) == 8, "Sequence didn't copy correctly"
 
@@ -287,7 +288,7 @@ class Test_ProcessPaths:
         src_path = path_sequence_tx
         trg_path = str(datafiles)
         success = sync.process_paths(src_path, trg_path, include_tx=True)
-        assert success == 1, "Failed to process paths"
+        assert success is True, "Failed to process paths"
         files_copied = os.listdir(trg_path)
         assert len(files_copied) == 10, "Sequence didn't copy correctly"
 
@@ -295,16 +296,82 @@ class Test_ProcessPaths:
         src_path = path_dir
         trg_path = path_dir
         result = sync.process_paths(src_path, trg_path)
-        assert result == 0
+        assert result is False
 
     def test_src_missing(self):
         src_path = os.path.join(path_dir, "doesnotexist.jpg")
         trg_path = path_dir
         result = sync.process_paths(src_path, trg_path)
-        assert result == 0
+        assert result is False
 
     def test_trg_is_not_dir(self):
         src_path = path_dir
         trg_path = path_single_file
         result = sync.process_paths(src_path, trg_path)
-        assert result == 0
+        assert result is False
+
+
+class Test_Sequences:
+    def test_seq_digits_not_found(self):
+        file_path = os.path.join(
+                path_root, "singlefile",
+                "no_pattern", "C_cresta_01__MSH-BUMP.png"
+            )
+        result = sync.get_sequence_files(file_path)
+        assert result is None
+        result = sync.is_sequence(file_path)
+        assert result is False
+        result = sync.get_sequence_name_pattern(file_path)
+        assert result is None
+
+
+class Test_ProcessDirs:
+    def test_trg_not_existing(self):
+        src_path = path_dir
+        trg_path = os.path.join(path_root, "TEMP_DIR_DELETE")
+        result = sync._process_dirs(
+                src_path, trg_path, force_overwrite=True
+            )
+        assert result is True
+        assert os.path.exists(trg_path) is True
+        shutil.rmtree(trg_path)
+        assert os.path.exists(trg_path) is False
+
+    def test_trg_exists_overwrite_false(self):
+        src_path = path_dir
+        trg_path = os.path.join(path_root, "TEMP_DIR_DELETE")
+        os.mkdir(trg_path)
+        result = sync._process_dirs(
+                src_path, trg_path, force_overwrite=False
+            )
+        assert result is True
+        shutil.rmtree(trg_path)
+        assert os.path.exists(trg_path) is False
+
+    def test_exception(self):
+        src_path = os.path.join(path_root, "doesnotexist")
+        trg_path = os.path.join(path_root, "TEMP_DIR_DELETE")
+        result = sync._process_dirs(
+                src_path, trg_path, force_overwrite=True
+            )
+        assert result is False
+
+    def test_create_dirs(self):
+        dir_path = os.path.join(path_root, "TEMP_DIR_DELETE")
+        result = sync._create_dir(dir_path)
+        assert result is True
+        assert os.path.exists(dir_path) is True
+        shutil.rmtree(dir_path)
+        assert os.path.exists(dir_path) is False
+
+
+class Test_ProcessFiles:
+    def test_file_exists_overwrite_false(self):
+        src_path = path_single_file
+        trg_path = os.path.join(
+                path_root, "singlefile", "src_path"
+            )
+        result = sync._process_original_files(
+                src_path, trg_path, force_overwrite=False
+            )
+        assert result is True
