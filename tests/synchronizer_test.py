@@ -292,7 +292,19 @@ class Test_ProcessPaths:
         assert len(files_copied) == 10, "Sequence didn't copy correctly"
 
     def test_src_trg_equal(self):
-        src_path = path_single_file
+        src_path = path_dir
+        trg_path = path_dir
+        result = sync.process_paths(src_path, trg_path)
+        assert result == 0
+
+    def test_src_missing(self):
+        src_path = os.path.join(path_dir, "doesnotexist.jpg")
+        trg_path = path_dir
+        result = sync.process_paths(src_path, trg_path)
+        assert result == 0
+
+    def test_trg_is_not_dir(self):
+        src_path = path_dir
         trg_path = path_single_file
         result = sync.process_paths(src_path, trg_path)
         assert result == 0

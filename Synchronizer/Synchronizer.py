@@ -257,15 +257,21 @@ def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
 
     success = False
     # Sanity checks
-    if src_path == trg_path:
-        logger.debug(
-            "Skipped: Source and target are the same.\n{}".format(
+    if not os.path.isdir(trg_path):
+        logger.warning(
+            "Skipped: Target path must be a directory.\n{}".format(
                 logger_string)
             )
         success = False
     elif not os.path.exists(src_path):
-        logger.debug(
+        logger.warning(
             "Skipped: Source path doesn't exist.\n{}".format(
+                logger_string)
+            )
+        success = False
+    elif src_path == trg_path:
+        logger.warning(
+            "Skipped: Source and target are the same.\n{}".format(
                 logger_string)
             )
         success = False
