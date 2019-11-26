@@ -364,9 +364,14 @@ class Test_ProcessDirs:
         shutil.rmtree(dir_path)
         assert os.path.exists(dir_path) is False
 
+    def test_create_dir_fails(self):
+        dir_path = ""
+        result = sync._create_dir(dir_path)
+        assert result is False
+
 
 class Test_ProcessFiles:
-    def test_file_exists_overwrite_false(self):
+    def test_origfile_exists_overwrite_false(self):
         src_path = path_single_file
         trg_path = os.path.join(
                 path_root, "singlefile", "src_path"
@@ -375,3 +380,43 @@ class Test_ProcessFiles:
                 src_path, trg_path, force_overwrite=False
             )
         assert result is True
+
+    @trg_dir
+    def test_missing_include_tx_sequence(self, datafiles):
+        src_path = path_sequence
+        trg_path = str(datafiles)
+        result = sync._process_files(
+            src_path, trg_path, force_overwrite=False,
+            only_tx=True, include_tx=False
+            )
+        assert result is True
+
+    @trg_dir
+    def test_missing_include_tx_file(self, datafiles):
+        src_path = path_single_file
+        trg_path = str(datafiles)
+        result = sync._process_files(
+            src_path, trg_path, force_overwrite=False,
+            only_tx=True, include_tx=False
+            )
+        assert result is True
+
+    def test_txfile_exists_overwrite_false(self):
+        src_path = path_texture
+        trg_path = os.path.join(
+                path_root, "texture", "src_path"
+            )
+        result = sync._process_tx(
+                src_path, trg_path, force_overwrite=False
+            )
+        assert result is True
+
+    def test_txfile_not_existing(self):
+        src_path = path_single_file
+        trg_path = os.path.join(
+                path_root, "texture", "src_path"
+            )
+        result = sync._process_tx(
+                src_path, trg_path, force_overwrite=False
+            )
+        assert result is False

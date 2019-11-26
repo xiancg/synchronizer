@@ -59,8 +59,8 @@ def get_sync_status(
             7 = "Source and Target are the same"
         None -- Not implemented status comparison
     """
-    src_path = os.path.normcase(os.path.abspath(src_path))
-    trg_path = os.path.normcase(os.path.abspath(trg_path))
+    src_path_norm = os.path.normcase(os.path.abspath(src_path))
+    trg_path_norm = os.path.normcase(os.path.abspath(trg_path))
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
                 src_path, trg_path
                 )
@@ -68,7 +68,7 @@ def get_sync_status(
         same_kind = (os.path.isfile(src_path) and os.path.isfile(trg_path)) or\
                     (os.path.isdir(src_path) and os.path.isdir(trg_path))
         if same_kind:
-            if src_path == trg_path:
+            if src_path_norm == trg_path_norm:
                 logger.debug("{}.\n{}".format(
                     status_dict[7], logger_string)
                     )
@@ -246,8 +246,8 @@ def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
         [bool] -- If files were processed correctly, True is returned.
             False otherwise.
     """
-    src_path = os.path.normcase(os.path.abspath(src_path))
-    trg_path = os.path.normcase(os.path.abspath(trg_path))
+    src_path_norm = os.path.normcase(os.path.abspath(src_path))
+    trg_path_norm = os.path.normcase(os.path.abspath(trg_path))
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
                 src_path, trg_path
                 )
@@ -269,7 +269,7 @@ def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
                 logger_string)
             )
         success = False
-    elif src_path == trg_path:
+    elif src_path_norm == trg_path_norm:
         logger.warning(
             "Skipped: Source and target are the same.\n{}".format(
                 logger_string)
@@ -294,7 +294,6 @@ def get_sequence_files(file_path):
         [list] -- List of sequence files including given file_path.
             None if sequence is not found.
     """
-    file_path = os.path.realpath(os.path.normcase(file_path))
     path_parts = os.path.split(file_path)
     parent_folder = path_parts[0]
     file_with_ext = path_parts[1]
@@ -337,7 +336,7 @@ def is_sequence(file_path):
         bool -- If another a file is found with the same name pattern,
             True is returned. Missing files are taken into account.
     """
-    file_path = os.path.realpath(os.path.normcase(file_path))
+    file_path_norm = os.path.realpath(os.path.normcase(file_path))
     parent_folder, file_with_ext = os.path.split(file_path)
     file_name, file_ext = file_with_ext.rsplit(".", 1)
 
@@ -348,12 +347,13 @@ def is_sequence(file_path):
     files_and_dirs = os.listdir(parent_folder)
     result = False
     for each in files_and_dirs:
-        each_path = os.path.realpath(
-                os.path.normcase(os.path.join(parent_folder, each))
+        each_path = os.path.join(parent_folder, each)
+        each_path_norm = os.path.realpath(
+                os.path.normcase(each_path)
             )
         if os.path.isfile(each_path):
             each_file_name, each_file_ext = each.rsplit(".", 1)
-            if file_path == each_path:
+            if file_path_norm == each_path_norm:
                 continue
             elif each[:len(name_pattern)].lower() == name_pattern.lower()\
                     and each_file_ext.lower() == file_ext.lower():
@@ -419,7 +419,7 @@ def get_sequence_name_pattern(file_path):
                 Name Pattern: 'C_cresta_02__MSH-BUMP.')
         None -- If no digits can be found in the name, returns None
     """
-    path_parts = os.path.split(os.path.realpath(os.path.normcase(file_path)))
+    path_parts = os.path.split(file_path)
     file_with_ext = path_parts[1]
     file_name, file_ext = file_with_ext.rsplit(".", 1)
     # Get number of digits in file_name
@@ -458,8 +458,6 @@ def _process_dirs(src_path, trg_path, force_overwrite):
         [bool] -- If directories were processed correctly, True is returned.
             False otherwise.
     """
-    src_path = os.path.normcase(os.path.abspath(src_path))
-    trg_path = os.path.normcase(os.path.abspath(trg_path))
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
                 src_path, trg_path
                 )
@@ -524,9 +522,6 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
         [bool] -- If file was processed correctly, True is returned.
             False otherwise.
     """
-    src_path = os.path.normcase(os.path.abspath(src_path))
-    trg_path = os.path.normcase(os.path.abspath(trg_path))
-
     skip_non_tx = False
     if kwargs.get("only_tx"):
         skip_non_tx = kwargs.get("only_tx")
@@ -653,6 +648,7 @@ def _process_tx(original_file_path, trg_path, force_overwrite):
         force_overwrite {bool} -- Empties trg_path before copying src_path
     """
     src_tx_path = original_file_path.rsplit(".", 1)[0] + ".tx"
+    success = False
     if os.path.exists(src_tx_path):
         try:
             src_tx_name = os.path.split(src_tx_path)[1]
@@ -666,19 +662,24 @@ def _process_tx(original_file_path, trg_path, force_overwrite):
                     "Copied {} to {}".format(
                         src_tx_path, trg_path)
                 )
+                success = True
             else:
                 logger.debug(
                     "File already existed and force_overwrite was set to "
-                    "False: {}\n\t{}".format(
+                    "False: \n\t{}".format(
                         os.path.join(trg_path, src_tx_name))
                 )
+                success = True
         except (IOError, OSError) as why:
             logger.warning(
                 "System Error while processing source tx file: {}\n{}".format(
                     src_tx_path, why)
             )
+            success = False
     else:
         logger.warning(
             "The specified source TX file doesn't exist: {}".format(
                 src_tx_path)
         )
+        success = False
+    return success
