@@ -9,6 +9,16 @@ from synchronizer.logger import logger
 # TODO: argparse?
 # TODO: Configurar CI en GitLab
 
+status_dict = {
+            1: "In sync",
+            2: "Out of sync",
+            3: "Both paths do not exist",
+            4: "Source path does not exist",
+            5: "Target path does not exist",
+            6: "Different kind of paths (file-dir, dir-file)",
+            7: "Source and Target are exactly the same path"
+            }
+
 
 def get_sync_status(
         src_path, trg_path,
@@ -40,22 +50,15 @@ def get_sync_status(
 
     Returns:
         tuple -- (Status code, Status description)
-            1 = "In sync",
-            2 = "Out of sync",
-            3 = "Both paths missing",
-            4 = "Source file missing",
-            5 = "Target file missing",
+            1 = "In sync"
+            2 = "Out of sync"
+            3 = "Both paths do not exist"
+            4 = "Source path does not exist"
+            5 = "Target path does not exist"
             6 = "Different kind of paths (file-dir, dir-file)"
+            7 = "Source and Target are the same"
         None -- Not implemented status comparison
     """
-    status_dict = {
-            1: "In sync",
-            2: "Out of sync",
-            3: "Both paths missing",
-            4: "Source file missing",
-            5: "Target file missing",
-            6: "Different kind of paths (file-dir, dir-file)"
-            }
     src_path = os.path.normcase(os.path.abspath(src_path))
     trg_path = os.path.normcase(os.path.abspath(trg_path))
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
@@ -65,9 +68,11 @@ def get_sync_status(
         same_kind = (os.path.isfile(src_path) and os.path.isfile(trg_path)) or\
                     (os.path.isdir(src_path) and os.path.isdir(trg_path))
         if same_kind:
-            what_kind = "Files"
-            if os.path.isdir(src_path) and os.path.isdir(trg_path):
-                what_kind = "Directories"
+            if src_path == trg_path:
+                logger.debug("{}.\n{}".format(
+                    status_dict[7], logger_string)
+                    )
+                return (7, status_dict[7])
             compare_items = compare_stats(
                     src_path, trg_path, ignore_name, ignore_stats
                 )
@@ -79,38 +84,45 @@ def get_sync_status(
                     # If any of the stats is different, status is Not in sync
                     result = False
             if result:
-                logger.debug("{} in sync.\n{}".format(
-                    what_kind, logger_string)
+                logger.debug("{}.\n{}".format(
+                    status_dict[1], logger_string)
                     )
                 return (1, status_dict[1])
             else:
-                logger.debug("{} out of sync.\n{}".format(
-                    what_kind, logger_string)
+                logger.debug("{}.\n{}".format(
+                    status_dict[2], logger_string)
                     )
                 return (2, status_dict[2])
+        elif os.path.isfile(src_path) and os.path.isdir(trg_path):
+            logger.debug("{}.\n{}".format(
+                status_dict[6], logger_string)
+                )
+            return (6, status_dict[6])
+        elif os.path.isdir(src_path) and os.path.isfile(trg_path):
+            logger.debug("{}.\n{}".format(
+                status_dict[6], logger_string)
+                )
+            return (6, status_dict[6])
+        else:
+            logger.error("Not implemented status comparison.\n{}".format(
+                logger_string)
+                )
+            return None
     elif not os.path.exists(src_path) and not os.path.exists(trg_path):
-        logger.debug("Both given paths do not exist.\n{}".format(
-            logger_string)
+        logger.debug("{}.\n{}".format(
+            status_dict[3], logger_string)
             )
         return (3, status_dict[3])
     elif not os.path.exists(src_path) and os.path.exists(trg_path):
-        status = "Source path does not exist but target path does.\n"
-        logger.debug(status + logger_string)
+        logger.debug("{}.\n{}".format(
+            status_dict[4], logger_string)
+            )
         return (4, status_dict[4])
     elif not os.path.exists(trg_path) and not os.path.exists(trg_path):
-        status = "Source path exists but target path doesn't.\n"
-        logger.debug(status + logger_string)
+        logger.debug("{}.\n{}".format(
+            status_dict[5], logger_string)
+            )
         return (5, status_dict[5])
-    elif os.path.isfile(src_path) and os.path.isdir(trg_path):
-        logger.debug("Different kind of paths (file-dir)\n{}".format(
-            logger_string)
-            )
-        return (6, status_dict[6])
-    elif os.path.isdir(trg_path) and os.path.isfile(src_path):
-        logger.debug("Different kind of paths (dir-file)\n{}".format(
-            logger_string)
-            )
-        return (6, status_dict[6])
     else:
         logger.error("Not implemented status comparison.\n{}".format(
             logger_string)

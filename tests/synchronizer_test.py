@@ -105,6 +105,54 @@ class Test_SyncStatus:
         if result_dif:
             assert result_dif[0] == 2, "Sync status is not 2"
 
+    def test_both_paths_missing(self):
+        src_path = os.path.join(path_root, "doesnotexist")
+        trg_path = os.path.join(path_root, "doesnotexist2")
+        result = sync.get_sync_status(
+            src_path, trg_path, ignore_name=True
+            )
+        assert result[0] == 3
+
+    def test_src_path_missing(self):
+        src_path = os.path.join(path_root, "doesnotexist")
+        trg_path = path_root
+        result = sync.get_sync_status(
+            src_path, trg_path, ignore_name=True
+            )
+        assert result[0] == 4
+
+    def test_trg_path_missing(self):
+        src_path = path_root
+        trg_path = os.path.join(path_root, "doesnotexist")
+        result = sync.get_sync_status(
+            src_path, trg_path, ignore_name=True
+            )
+        assert result[0] == 5
+
+    def test_diff_path_kinds_src_is_file(self):
+        src_path = path_single_file
+        trg_path = path_root
+        result = sync.get_sync_status(
+            src_path, trg_path, ignore_name=True
+            )
+        assert result[0] == 6
+
+    def test_diff_path_kinds_trg_is_file(self):
+        src_path = path_root
+        trg_path = path_single_file
+        result = sync.get_sync_status(
+            src_path, trg_path, ignore_name=True
+            )
+        assert result[0] == 6
+
+    def test_src_trg_equal(self):
+        src_path = path_single_file
+        trg_path = path_single_file
+        result = sync.get_sync_status(
+            src_path, trg_path, ignore_name=True
+            )
+        assert result[0] == 7
+
 
 class Test_ProcessPaths:
     def test_process_dir(self, datafiles):
@@ -155,7 +203,8 @@ class Test_ProcessPaths:
                                   'st_ctime', 'st_mtime']
                 )
         assert status[0] == 1, "File is not in sync"
-        assert os.path.exists(tx_file_path) == 0, "tx copied, but it shouldn't have been."
+        tx_file_exists = os.path.exists(tx_file_path)
+        assert tx_file_exists == 0, "tx shouldn't have been copied."
 
     @trg_dir
     def test_process_texture_with_tx(self, datafiles):
