@@ -7,9 +7,9 @@ verify_ssl = true
 pytest = "*"
 pytest-cov = "*"
 pytest-datafiles = "*"
+flake8 = "*"
 
 [packages]
-flake8 = "*"
 
 [requires]
 python_version = "2.7"
