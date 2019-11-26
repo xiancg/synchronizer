@@ -290,3 +290,9 @@ class Test_ProcessPaths:
         assert success == 1, "Failed to process paths"
         files_copied = os.listdir(trg_path)
         assert len(files_copied) == 10, "Sequence didn't copy correctly"
+
+    def test_src_trg_equal(self):
+        src_path = path_single_file
+        trg_path = path_single_file
+        result = sync.process_paths(src_path, trg_path)
+        assert result == 0
