@@ -6,8 +6,6 @@ import shutil
 
 from synchronizer.logger import logger
 
-# TODO: argparse?
-# TODO: Configurar CI en GitLab
 
 status_dict = {
             1: "In sync",
