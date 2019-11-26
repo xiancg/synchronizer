@@ -107,3 +107,4 @@ venv.bak/
 .project
 *.code-workspace
 CGXLightingTools.env
+/cov_html
