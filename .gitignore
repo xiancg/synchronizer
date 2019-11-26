@@ -108,3 +108,4 @@ venv.bak/
 *.code-workspace
 CGXLightingTools.env
 /cov_html
+coverage_cmd.txt
