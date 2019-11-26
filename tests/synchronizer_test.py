@@ -153,6 +153,22 @@ class Test_SyncStatus:
             )
         assert result[0] == 7
 
+    def test_different_name(self):
+        src_path = path_single_file
+        trg_path = os.path.join(
+                path_root, "sequence", "src_path",
+                "C_cresta_01__MSH-BUMP.1001.png"
+            )
+        result = sync.compare_stats(
+            src_path, trg_path, ignore_name=False
+            )
+        assert result["Name"] == 0
+
+    def test_get_dir_size_not_dir(self):
+        dir_path = path_single_file
+        result = sync.get_dir_size(dir_path)
+        assert result is None
+
 
 class Test_ProcessPaths:
     def test_process_dir(self, datafiles):
