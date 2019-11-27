@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function
 
 import os
 import shutil
+import six
 
 from synchronizer.logger import logger
 
@@ -76,7 +77,7 @@ def get_sync_status(
                 )
             result = True
             logger_string += "\tMatch comparison results:\n"
-            for key, value in compare_items.iteritems():
+            for key, value in six.iteritems(compare_items):
                 logger_string += "\t\t{}: {}\n".format(key, str(value))
                 if not value:
                     # If any of the stats is different, status is Not in sync
@@ -180,8 +181,7 @@ def compare_stats(
         result["Name"] = False
     elif src_file_name == trg_file_name and not ignore_name:
         result["Name"] = True
-
-    for key, value in stats_dict.iteritems():
+    for key, value in six.iteritems(stats_dict):
         if key not in ignore_stats:
             if eval("src_stat.{}".format(key)) != \
                eval("trg_stat.{}".format(key)):
