@@ -170,6 +170,24 @@ class Test_SyncStatus:
         result = sync.get_dir_size(dir_path)
         assert result is None
 
+    @data_single_file
+    def test_get_most_recent(self, datafiles):
+        src_path = path_single_file
+        trg_path = str(datafiles)
+        result = sync.get_most_recent(src_path, trg_path)
+        assert result == trg_path
+
+    def test_get_most_recent_equal(self):
+        src_path = path_single_file
+        trg_path = path_single_file
+        result = sync.get_most_recent(src_path, trg_path)
+        assert result is None
+
+    def test_invalid_stat(self):
+        src_path = path_single_file
+        result = sync.get_most_recent(src_path, src_path, 'st_size')
+        assert result is None
+
 
 class Test_ProcessPaths:
     def test_process_dir(self, datafiles):

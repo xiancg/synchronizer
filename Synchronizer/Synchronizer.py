@@ -3,6 +3,8 @@ from __future__ import absolute_import, print_function
 
 import os
 import shutil
+import datetime
+
 import six
 
 from synchronizer.logger import logger
@@ -140,8 +142,8 @@ def compare_stats(
     dict with all comparison results.
 
     Arguments:
-        src_path {string} -- Source path, file or dir
-        trg_path {string} -- Source path, file or dir
+        src_path {string} -- Source path, file or directory
+        trg_path {string} -- Target path, file or directory
 
     Keyword Arguments:
         ignore_name {bool} -- Ignores name comparison
@@ -201,6 +203,58 @@ def compare_stats(
             result['Dir size'] = True
 
     return result
+
+
+def get_most_recent(src_path, trg_path, use_stat='st_mtime'):
+    """Compares two paths and returns whichever has the most recent stat time.
+    Default stat used for comparison is st_mtime which is: Time of most recent
+    content modification.
+
+    Arguments:
+        src_path {string} -- Source path, file or directory
+        trg_path {string} -- Target path, file or directory
+
+    Keyword Arguments:
+        use_stat {string} -- Stat used for comparison (default: {'st_mtime'})
+            Valid options:
+                'st_mtime': Time of most recent content modification
+                'st_atime': Time of most recent access
+                'st_ctime': Time of creation on Windows, time of most recent
+                    metadata change on Unix
+
+    Returns:
+        [string] -- Path of whichever has the most recent stat time.
+        None if both path stats are equal or an invalid stat options is passed.
+    """
+    valid_stats = ['st_mtime', 'st_atime', 'st_ctime']
+
+    logger_string = "\tSource: {}\n\tTarget: {}\n".format(
+        src_path, trg_path
+        )
+    if use_stat in valid_stats:
+        src_stat = os.stat(src_path)  # noqa: F841
+        trg_stat = os.stat(trg_path)  # noqa: F841
+
+        src_most = eval("src_stat.{}".format(use_stat))
+        trg_most = eval("trg_stat.{}".format(use_stat))
+        if trg_most > src_most:
+            return trg_path
+        elif trg_most < src_most:
+            return src_path
+        else:
+            readable_time = datetime.datetime.fromtimestamp(src_most)
+            logger.debug(
+                "Both src_path and trg_path have equal {}: {}\n".format(
+                    use_stat, readable_time, logger_string)
+                )
+            return None
+
+    valid_stats_str = ", ".join(valid_stats)
+    logger.debug(
+        "use_stat= {} is invalid. Valid options: {}\n".format(
+            use_stat, valid_stats_str)
+        )
+    return None
 
 
 def get_dir_size(dir_path):
