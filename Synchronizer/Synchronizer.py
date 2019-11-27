@@ -132,7 +132,8 @@ def get_sync_status(
 def compare_stats(
         src_path, trg_path,
         ignore_name=False,
-        ignore_stats=['st_uid', 'st_gid', 'st_atime', 'st_ctime']):
+        ignore_stats=['st_uid', 'st_gid', 'st_atime',
+        'st_ctime','st_ino', 'st_dev']):
     """Compares stats and file names for two given paths. Returns a
     dict with all comparison results.
 
@@ -145,9 +146,10 @@ def compare_stats(
             (default: {False})
         ignore_stats {list} -- Ignores this list of stats. Names correspond to
             what os.stat() returns.
-            (default: {['st_uid', 'st_gid', 'st_atime', 'st_ctime']})
-            'st_mode': 'Protection bits'
-            'st_ino': 'inode number'
+            (default: {['st_uid', 'st_gid', 'st_atime', 'st_ctime'
+                'st_ino', 'st_dev']})
+            'st_mode': 'File type and file mode bits'
+            'st_ino': 'inode or file index'
             'st_dev': 'Device'
             'st_nlink': 'Number of hard links'
             'st_uid': 'User id of owner'
@@ -163,8 +165,8 @@ def compare_stats(
     src_stat = os.stat(src_path)  # noqa: F841
     trg_stat = os.stat(trg_path)  # noqa: F841
     stats_dict = {
-        'st_mode': 'Protection bits',
-        'st_ino': 'inode number',
+        'st_mode': 'File type and file mode bits',
+        'st_ino': 'inode or file index',
         'st_dev': 'Device',
         'st_nlink': 'Number of hard links',
         'st_uid': 'User id of owner',

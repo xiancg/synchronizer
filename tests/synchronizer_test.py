@@ -57,7 +57,7 @@ class Test_SyncStatus:
             src_path, trg_path,
             ignore_stats=[
                 'st_uid', 'st_gid', 'st_atime',
-                'st_ctime', 'st_mtime'
+                'st_ctime', 'st_mtime', 'st_ino', 'st_dev'
                 ]
             )
         assert result is not None
@@ -83,7 +83,7 @@ class Test_SyncStatus:
             ignore_name=True,
             ignore_stats=[
                 'st_uid', 'st_gid', 'st_atime',
-                'st_ctime', 'st_mtime'
+                'st_ctime', 'st_mtime', 'st_ino', 'st_dev'
                 ]
             )
         assert result is not None
@@ -99,7 +99,7 @@ class Test_SyncStatus:
             ignore_name=True,
             ignore_stats=[
                 'st_uid', 'st_gid', 'st_atime',
-                'st_ctime', 'st_mtime'
+                'st_ctime', 'st_mtime', 'st_ino', 'st_dev'
                 ]
             )
         assert result_dif is not None
@@ -184,7 +184,8 @@ class Test_ProcessPaths:
             status = sync.get_sync_status(
                     src_file_path, trg_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
-                                  'st_ctime', 'st_mtime']
+                                  'st_ctime', 'st_mtime',
+                                  'st_ino', 'st_dev']
                 )
             assert status[0] == 1, "Files are not in sync"
 
@@ -200,7 +201,8 @@ class Test_ProcessPaths:
         status = sync.get_sync_status(
                     src_path, trg_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
-                                  'st_ctime', 'st_mtime']
+                                  'st_ctime', 'st_mtime',
+                                  'st_ino', 'st_dev']
                 )
         assert status[0] == 1, "File is not in sync"
 
@@ -217,7 +219,8 @@ class Test_ProcessPaths:
         status = sync.get_sync_status(
                     src_path, trg_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
-                                  'st_ctime', 'st_mtime']
+                                  'st_ctime', 'st_mtime',
+                                  'st_ino', 'st_dev']
                 )
         assert status[0] == 1, "File is not in sync"
         tx_file_exists = os.path.exists(tx_file_path)
@@ -237,13 +240,15 @@ class Test_ProcessPaths:
         status = sync.get_sync_status(
                     src_path, trg_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
-                                  'st_ctime', 'st_mtime']
+                                  'st_ctime', 'st_mtime',
+                                  'st_ino', 'st_dev']
                 )
         assert status[0] == 1, "File is not in sync"
         status = sync.get_sync_status(
                     src_tx_path, tx_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
-                                  'st_ctime', 'st_mtime']
+                                  'st_ctime', 'st_mtime',
+                                  'st_ino', 'st_dev']
                 )
         assert status[0] == 1, "File is not in sync"
 
@@ -261,7 +266,8 @@ class Test_ProcessPaths:
         status = sync.get_sync_status(
                     src_tx_path, tx_file_path,
                     ignore_stats=['st_uid', 'st_gid', 'st_atime',
-                                  'st_ctime', 'st_mtime']
+                                  'st_ctime', 'st_mtime',
+                                  'st_ino', 'st_dev']
                 )
         assert status[0] == 1, "File is not in sync"
 
