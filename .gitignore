@@ -109,3 +109,5 @@ venv.bak/
 CGXLightingTools.env
 /cov_html
 coverage_cmd.txt
+cov_py27_html/
+cov_py37_html/
