@@ -7,6 +7,14 @@ import pytest
 import os
 import shutil
 
+try:
+    trg_empty_dir = os.path.join(
+            os.path.split(__file__)[0], "data", "trg_path"
+        )
+    if not os.path.exists(trg_empty_dir):
+        os.mkdir(trg_empty_dir)
+except (IOError, OSError) as why:
+    raise why
 
 # --------------------------------------------------------
 #  TESTING DATA
