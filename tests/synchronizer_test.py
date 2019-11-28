@@ -1,12 +1,14 @@
 # coding=utf-8
 from __future__ import absolute_import, print_function
 
-from synchronizer import copier, syncstatus, utils
+from synchronizer import copier, syncstatus, utils, logger
+
 
 import pytest
 import os
 import shutil
 
+# Empty directory to use for testing
 try:
     trg_empty_dir = os.path.join(
             os.path.split(__file__)[0], "data", "trg_path"
@@ -15,6 +17,11 @@ try:
         os.mkdir(trg_empty_dir)
 except (IOError, OSError) as why:
     raise why
+
+# Debug logging
+logger.init_logger()
+# logger.init_file_logger()
+
 
 # --------------------------------------------------------
 #  TESTING DATA
