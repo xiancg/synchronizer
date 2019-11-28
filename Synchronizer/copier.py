@@ -19,7 +19,8 @@ def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
 
     Keyword Arguments:
         force_overwrite {bool} -- Empties trg_path before copying src_path
-            contents (default: {True})
+            contents. If src_path it's a file it'll only remove that file.
+            (default: {True})
 
     Optional Keyword Arguments:
         include_tx {bool} -- If tx files are found that match given
