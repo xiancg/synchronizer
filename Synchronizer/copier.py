@@ -28,6 +28,8 @@ def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
         only_tx {bool} -- Finds tx files that match given src_path,
             but copies tx only, not src_path. For this flag to work,
             include_tx must be passed and set to True.
+        find_sequence {bool} -- If set to False, it'll skip trying to find
+            sequence files for given src_path (default: {True})
 
     Returns:
         [bool] -- If files were processed correctly, True is returned.
