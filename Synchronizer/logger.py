@@ -48,8 +48,3 @@ def init_file_logger():
     fileHandler.setLevel(logging.DEBUG)
     fileHandler.setFormatter(formatter)
     logger.addHandler(fileHandler)
-
-
-# * SYNC session events
-init_logger()
-# init_file_logger()
