@@ -7,13 +7,15 @@ from synchronizer.logger import logger
 
 
 def get_sequence_files(file_path):
-    """Find and return all files that are part of a sequence matching file_path.
+    """Find and return all files that are part of a sequence matching ``file_path``.
     If no sequence found, returns None. Two files are enough to make
     a sequence, even if they're not sequential. This assumes the sequence
     digits are right beside the file extension.
-        e.g.: C_myfile_v568.jpg
-            MJ_thisisafileseq_4568.dpx
-            MB_udimsforthewin.1008.tx
+
+        e.g.:
+            - C_myfile_v568.jpg
+            - MJ_thisisafileseq_4568.dpx
+            - MB_udimsforthewin.1008.tx
 
     Arguments:
         ``file_path`` {string} -- Path to a file
@@ -55,9 +57,11 @@ def is_sequence(file_path):
     files is enough to make a sequence, even if they are not sequential, if it
     finds one, it'll stop looking and return True. This assumes the sequence
     digits are right beside the file extension.
-    ie: C_myfile_v568.jpg
-        MJ_thisisafileseq_4568.dpx
-        MB_udimsforthewin.1008.tx
+
+        e.g.:
+            - C_myfile_v568.jpg
+            - MJ_thisisafileseq_4568.dpx
+            - MB_udimsforthewin.1008.tx
 
     If you want to get a complete list of files, use get_sequence_files()
 
@@ -102,19 +106,22 @@ def is_sequence_complete(files, name_pattern):
     """Evaluates a list of sequence files, if the sequence is missing one
     or more files, returns False. If sequence is complete, returns True.
     This assumes the sequence digits are right beside the file extension.
-        ie: C_myfile_v568.jpg
-            MJ_thisisafileseq_4568.dpx
-            MB_udimsforthewin.1008.tx
+
+        e.g.:
+            - C_myfile_v568.jpg
+            - MJ_thisisafileseq_4568.dpx
+            - MB_udimsforthewin.1008.tx
 
     Arguments:
-        files {list} -- List of complete file paths to a file sequence.
-            You could use get_sequence_files() to get a list.
-        name_pattern {string} -- As returned by get_sequence_name_pattern(),
-            It's a string consisting of the base name for the file without
-            trailing digits.
-            (i.e.:
-                File: 'C_cresta_02__MSH-BUMP.1001.png'
-                Name Pattern: 'C_cresta_02__MSH-BUMP.')
+        ``files`` {list} -- List of complete file paths to a file sequence.
+        You could use get_sequence_files() to get a list.
+        ``name_pattern`` {str} -- As returned by get_sequence_name_pattern(),
+        It's a string consisting of the base name for the file without
+        trailing digits.
+
+        e.g.:
+            - File: 'C_cresta_02__MSH-BUMP.1001.png'\n
+            - Name Pattern: 'C_cresta_02__MSH-BUMP.'
 
     Returns:
         [bool] -- True if sequence is complete. False otherwise.
@@ -143,20 +150,22 @@ def get_sequence_name_pattern(file_path):
     of the file. Both elements are used by other functions to identify
     file sequences. This assumes the sequence digits are right beside
     the file extension.
-        ie: C_myfile_v568.jpg
-            MJ_thisisafileseq_4568.dpx
-            MB_udimsforthewin.1008.tx
+        e.g.:
+            - C_myfile_v568.jpg\n
+            - MJ_thisisafileseq_4568.dpx\n
+            - MB_udimsforthewin.1008.tx
 
     Arguments:
-        file_path {string} -- Full path to a file
+        ``file_path`` {string} -- Full path to a file
 
     Returns:
-        [str] -- name_pattern
+        [str] -- ``name_pattern``
             It's a string consisting of the base name for the file
             without trailing digits.
-            (i.e.:
-                File: 'C_cresta_02__MSH-BUMP.1001.png'
-                Name Pattern: 'C_cresta_02__MSH-BUMP.')
+
+            e.g.:
+                - File: 'C_cresta_02__MSH-BUMP.1001.png'\n
+                - Name Pattern: 'C_cresta_02__MSH-BUMP.'
 
         [None] -- If no digits can be found in the name, returns None
     """
@@ -185,10 +194,8 @@ def get_sequence_name_pattern(file_path):
 def create_dir(dirpath):
     """Creates given directory.
 
-    Not meant to be used directly, use process_paths() instead.
-
     Arguments:
-        dirpath {string} -- Full path to a directory that needs to be created.
+        ``dirpath`` {str} -- Full path to a directory that needs to be created.
 
     Returns:
         [bool] -- True if directory creation was successful, False otherwise.
