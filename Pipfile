@@ -13,3 +13,4 @@ sphinx-rtd-theme = "*"
 
 [packages]
 six = "*"
+synchronizer = {editable = true,path = "."}
