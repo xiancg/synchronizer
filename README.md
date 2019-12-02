@@ -29,3 +29,11 @@ from synchronizer import syncstatus
 syncstatus.get_most_recent(src_path, trg_path, use_stat='st_mtime')
 ```
 
+4. Find and return all files that are part of a sequence matching file_path. If no sequence found, returns None. Two files are enough to make a sequence, even if they're not sequential. This assumes the sequence digits are right beside the file extension.
+    ie: C_myfile_v568.jpg
+        MJ_thisisafileseq_455868.dpx
+        MB_udimsforthewin.1008.tx
+```python
+from synchronizer import utils
+utils.get_sequence_files(file_path)
+```
