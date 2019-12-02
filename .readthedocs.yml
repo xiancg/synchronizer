@@ -4,6 +4,7 @@ version: 2
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
   configuration: docs/source/conf.py
+  fail_on_warning: false
 
 # Build all formats
 formats: all
@@ -14,5 +15,5 @@ python:
   install:
     - requirements: requirements.txt
     - method: setuptools
-        path: synchronizer
+      path: .
   system_packages: true

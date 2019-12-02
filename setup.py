@@ -24,7 +24,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.7'
     ],
-    packages=find_packages(where='synchronizer'),
+    packages=find_packages(where='.'),
     python_requires='>=2.7, >=3.7',
     extras_require={
         'dev': ['pytest', 'pytest-cov', 'pytest-datafiles', 'flake8'],
