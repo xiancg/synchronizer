@@ -10,7 +10,7 @@ Getting Started
     If given source is a file and it's part of a sequence it'll find and copy 
     the entire sequence of files.
 
-    ::
+    .. code-block:: python
     
         from synchronizer import copier
         copier.process_paths(src_path, trg_path, force_overwrite=True, **kwargs)
@@ -25,7 +25,7 @@ Getting Started
     Compares two files or directory paths and return sync status. Sync status 
     refers to ``name`` and ``os.stat()`` comparisons.
 
-    ::
+    .. code-block:: python
     
         from synchronizer import syncstatus
         syncstatus.get_sync_status(
@@ -39,7 +39,7 @@ Getting Started
     Default stat used for comparison is ``st_mtime`` which is: Time of most 
     recent content modification.
 
-    ::
+    .. code-block:: python
 
         from synchronizer import syncstatus
         syncstatus.get_most_recent(src_path, trg_path, use_stat='st_mtime')
@@ -58,12 +58,16 @@ Getting Started
         - MJ_thisisafileseq_455868.dpx
         - MB_udimsforthewin.1008.tx
     
-    ::
-        
+    .. code-block:: python
+
         from synchronizer import utils
         utils.get_sequence_files(file_path)
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
+   :caption: Reference
+   
+   copier
+   syncstatus
+   utilities
