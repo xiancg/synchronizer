@@ -9,7 +9,11 @@ from synchronizer.logger import logger
 def get_sequence_files(file_path):
     """Find and return all files that are part of a sequence matching file_path.
     If no sequence found, returns None. Two files are enough to make
-    a sequence, even if they're not sequential.
+    a sequence, even if they're not sequential. This assumes the sequence
+    digits are right beside the file extension.
+        ie: C_myfile_v568.jpg
+            MJ_thisisafileseq_4568.dpx
+            MB_udimsforthewin.1008.tx
 
     Arguments:
         file_path {string} -- Path to a file
@@ -49,7 +53,11 @@ def get_sequence_files(file_path):
 def is_sequence(file_path):
     """Looks for sibling files in the same directory. Since two sibling
     files is enough to make a sequence, even if they are not sequential, if it
-    finds one, it'll stop looking and return True.
+    finds one, it'll stop looking and return True. This assumes the sequence
+    digits are right beside the file extension.
+        ie: C_myfile_v568.jpg
+            MJ_thisisafileseq_4568.dpx
+            MB_udimsforthewin.1008.tx
 
     If you want to get a complete list of files, use get_sequence_files()
 
@@ -92,7 +100,11 @@ def is_sequence(file_path):
 
 def is_sequence_complete(files, name_pattern):
     """Evaluates a list of sequence files, if the sequence is missing one
-    or more files, returns False. If sequence is complete, returns True
+    or more files, returns False. If sequence is complete, returns True.
+    This assumes the sequence digits are right beside the file extension.
+        ie: C_myfile_v568.jpg
+            MJ_thisisafileseq_4568.dpx
+            MB_udimsforthewin.1008.tx
 
     Arguments:
         files {list} -- List of complete file paths to a file sequence.
@@ -129,7 +141,11 @@ def is_sequence_complete(files, name_pattern):
 def get_sequence_name_pattern(file_path):
     """Finds the name pattern and number of digits that make the name
     of the file. Both elements are used by other functions to identify
-    file sequences.
+    file sequences. This assumes the sequence digits are right beside
+    the file extension.
+        ie: C_myfile_v568.jpg
+            MJ_thisisafileseq_4568.dpx
+            MB_udimsforthewin.1008.tx
 
     Arguments:
         file_path {string} -- Full path to a file
