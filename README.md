@@ -1,12 +1,12 @@
 # Synchronizer
 
-CGI utilities to copy files from one place to another, find out basic stat differences between them and handle file sequences and textures (tx files).
+A collection of utilities for CGI-VFX to copy files from one place to another, find out basic stat differences between them and handle file sequences and textures (tx files).
 
 # Basic Usage:
 1. Copies src_path to trg_path. Takes both files and directories as source. If given source is a file and it's part of a sequence it'll find and copy the entire sequence of files.
 ```python
 from synchronizer import copier
-copier.processpaths(src_path, trg_path, force_overwrite=True, **kwargs)
+copier.process_paths(src_path, trg_path, force_overwrite=True, **kwargs)
 ```
 kwargs: 
     include_tx = True
