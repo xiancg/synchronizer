@@ -26,40 +26,42 @@ def get_sync_status(
         ignore_stats=['st_uid', 'st_gid', 'st_atime',
                       'st_ctime', 'st_ino', 'st_dev']):
     """Compare two files or directory paths and return sync status.
-    Sync status refers to name and os.stat() comparisons.
+    Sync status refers to name and ``os.stat()`` comparisons.
 
     Arguments:
-        src_path {string} -- Source path, file or directory
-        trg_path {string} -- Target path, file or directory
+        ``src_path`` {str} -- Source path, file or directory
+
+        ``trg_path`` {str} -- Target path, file or directory
 
     Keyword Arguments:
-        ignore_name {bool} -- Ignores name comparison
-            (default: {False})
-        ignore_stats {list} -- Ignores this list of stats. Names correspond to
-            what os.stat() returns.
-            (default: {['st_uid', 'st_gid', 'st_atime', 'st_ctime'
-                'st_ino', 'st_dev']})
-            'st_mode': 'File type and file mode bits'
-            'st_ino': 'inode or file index'
-            'st_dev': 'Device'
-            'st_nlink': 'Number of hard links'
-            'st_uid': 'User id of owner'
-            'st_gid': 'Group id of owner'
-            'st_size': 'File size'
-            'st_atime': 'Most recent access'
-            'st_mtime': 'Last modification'
-            'st_ctime': 'Most recent metadata change'
+        ``ignore_name`` {bool} -- Ignores name comparison
+        (default: {False})
+
+        ``ignore_stats`` {list} -- Ignores this list of stats. Names correspond to
+        what os.stat() returns.
+        (default: ['st_uid', 'st_gid', 'st_atime', 'st_ctime', 'st_ino', 'st_dev'])
+
+        -'st_mode': 'File type and file mode bits'\n
+        -'st_ino': 'inode or file index'\n
+        -'st_dev': 'Device'\n
+        -'st_nlink': 'Number of hard links'\n
+        -'st_uid': 'User id of owner'\n
+        -'st_gid': 'Group id of owner'\n
+        -'st_size': 'File size'\n
+        -'st_atime': 'Most recent access'\n
+        -'st_mtime': 'Last modification'\n
+        -'st_ctime': 'Most recent metadata change'
 
     Returns:
-        tuple -- (Status code, Status description)
-            1 = "In sync"
-            2 = "Out of sync"
-            3 = "Both paths do not exist"
-            4 = "Source path does not exist"
-            5 = "Target path does not exist"
-            6 = "Different kind of paths (file-dir, dir-file)"
-            7 = "Source and Target are the same"
-        None -- Not implemented status comparison
+        [tuple] -- (Status code, Status description)
+            1 = "In sync"\n
+            2 = "Out of sync"\n
+            3 = "Both paths do not exist"\n
+            4 = "Source path does not exist"\n
+            5 = "Target path does not exist"\n
+            6 = "Different kind of paths (file-dir, dir-file)"\n
+            7 = "Source and Target are the same"\n
+        [None] -- Not implemented status comparison
     """
     src_path_norm = os.path.normcase(os.path.abspath(src_path))
     trg_path_norm = os.path.normcase(os.path.abspath(trg_path))
@@ -141,29 +143,31 @@ def compare_stats(
     dict with all comparison results.
 
     Arguments:
-        src_path {string} -- Source path, file or directory
-        trg_path {string} -- Target path, file or directory
+        ``src_path`` {str} -- Source path, file or directory
+
+        ``trg_path`` {str} -- Target path, file or directory
 
     Keyword Arguments:
-        ignore_name {bool} -- Ignores name comparison
-            (default: {False})
-        ignore_stats {list} -- Ignores this list of stats. Names correspond to
-            what os.stat() returns.
-            (default: {['st_uid', 'st_gid', 'st_atime', 'st_ctime'
-                'st_ino', 'st_dev']})
-            'st_mode': 'File type and file mode bits'
-            'st_ino': 'inode or file index'
-            'st_dev': 'Device'
-            'st_nlink': 'Number of hard links'
-            'st_uid': 'User id of owner'
-            'st_gid': 'Group id of owner'
-            'st_size': 'File size'
-            'st_atime': 'Most recent access'
-            'st_mtime': 'Last modification'
-            'st_ctime': 'Most recent metadata change'
+        ``ignore_name`` {bool} -- Ignores name comparison
+        (default: {False})
+
+        ``ignore_stats`` {list} -- Ignores this list of stats. Names correspond to
+        what os.stat() returns.
+        (default: ['st_uid', 'st_gid', 'st_atime', 'st_ctime', 'st_ino', 'st_dev'])
+
+            -'st_mode': 'File type and file mode bits'\n
+            -'st_ino': 'inode or file index'\n
+            -'st_dev': 'Device'\n
+            -'st_nlink': 'Number of hard links'\n
+            -'st_uid': 'User id of owner'\n
+            -'st_gid': 'Group id of owner'\n
+            -'st_size': 'File size'\n
+            -'st_atime': 'Most recent access'\n
+            -'st_mtime': 'Last modification'\n
+            -'st_ctime': 'Most recent metadata change'
 
     Returns:
-        dict -- {Stat description: Comparison result bool}
+        [dict] -- {Stat description: Comparison result bool}
     """
     src_stat = os.stat(src_path)  # noqa: F841
     trg_stat = os.stat(trg_path)  # noqa: F841
@@ -210,20 +214,23 @@ def get_most_recent(src_path, trg_path, use_stat='st_mtime'):
     content modification.
 
     Arguments:
-        src_path {string} -- Source path, file or directory
-        trg_path {string} -- Target path, file or directory
+        ``src_path`` {str} -- Source path, file or directory
+
+        ``trg_path`` {str} -- Target path, file or directory
 
     Keyword Arguments:
-        use_stat {string} -- Stat used for comparison (default: {'st_mtime'})
-            Valid options:
-                'st_mtime': Time of most recent content modification
-                'st_atime': Time of most recent access
-                'st_ctime': Time of creation on Windows, time of most recent
-                    metadata change on Unix
+        ``use_stat`` {str} -- Stat used for comparison (default: {'st_mtime'})
+
+        Valid options:
+            -'st_mtime': Time of most recent content modification\n
+            -'st_atime': Time of most recent access\n
+            -'st_ctime': Time of creation on Windows, time of most recent
+            metadata change on Unix
 
     Returns:
-        [string] -- Path of whichever has the most recent stat time.
-        None if both path stats are equal or an invalid stat options is passed.
+        [str] -- Path of whichever has the most recent stat time.
+
+        [None] -- If both path stats are equal or an invalid stat options is passed.
     """
     valid_stats = ['st_mtime', 'st_atime', 'st_ctime']
 
@@ -260,12 +267,13 @@ def get_dir_size(dir_path):
     """Walks thru given directory to calculate total size.
 
     Arguments:
-        dir_path {string} -- Directory to measure size.
+        ``dir_path`` {str} -- Directory to measure size.
 
     Returns:
-        int -- Size of directory in bytes, as reported by the sum
+        [int] -- Size of directory in bytes, as reported by the sum
         of all its files os.stat()
-        None -- If dir_path is not a directory, returns None
+
+        [None] -- If dir_path is not a directory, returns None
     """
     if os.path.isdir(dir_path):
         total_size = 0

@@ -11,16 +11,16 @@ def get_sequence_files(file_path):
     If no sequence found, returns None. Two files are enough to make
     a sequence, even if they're not sequential. This assumes the sequence
     digits are right beside the file extension.
-        ie: C_myfile_v568.jpg
+        e.g.: C_myfile_v568.jpg
             MJ_thisisafileseq_4568.dpx
             MB_udimsforthewin.1008.tx
 
     Arguments:
-        file_path {string} -- Path to a file
+        ``file_path`` {string} -- Path to a file
 
     Returns:
         [list] -- List of sequence files including given file_path.
-            None if sequence is not found.
+        None if sequence is not found.
     """
     path_parts = os.path.split(file_path)
     parent_folder = path_parts[0]
@@ -55,18 +55,18 @@ def is_sequence(file_path):
     files is enough to make a sequence, even if they are not sequential, if it
     finds one, it'll stop looking and return True. This assumes the sequence
     digits are right beside the file extension.
-        ie: C_myfile_v568.jpg
-            MJ_thisisafileseq_4568.dpx
-            MB_udimsforthewin.1008.tx
+    ie: C_myfile_v568.jpg
+        MJ_thisisafileseq_4568.dpx
+        MB_udimsforthewin.1008.tx
 
     If you want to get a complete list of files, use get_sequence_files()
 
     Arguments:
-        file_path {string} -- Full path to a file
+        ``file_path`` {str} -- Full path to a file
 
     Returns:
-        bool -- If another a file is found with the same name pattern,
-            True is returned. Missing files are taken into account.
+        [bool] -- If another a file is found with the same name pattern,
+        True is returned. Missing files are taken into account.
     """
     file_path_norm = os.path.realpath(os.path.normcase(file_path))
     parent_folder, file_with_ext = os.path.split(file_path)
@@ -151,13 +151,14 @@ def get_sequence_name_pattern(file_path):
         file_path {string} -- Full path to a file
 
     Returns:
-        [string] -- name_pattern
+        [str] -- name_pattern
             It's a string consisting of the base name for the file
             without trailing digits.
             (i.e.:
                 File: 'C_cresta_02__MSH-BUMP.1001.png'
                 Name Pattern: 'C_cresta_02__MSH-BUMP.')
-        None -- If no digits can be found in the name, returns None
+
+        [None] -- If no digits can be found in the name, returns None
     """
     path_parts = os.path.split(file_path)
     file_with_ext = path_parts[1]

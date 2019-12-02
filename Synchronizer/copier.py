@@ -9,31 +9,34 @@ from synchronizer import utils
 
 
 def process_paths(src_path, trg_path, force_overwrite=True, **kwargs):
-    """Copies src_path to trg_path. Takes both files and directories
+    """Copies ``src_path`` to ``trg_path``. Takes both files and directories
     as source. If given source is a file and it's part of a sequence
     it'll find and copy the entire sequence of files.
 
     Arguments:
-        src_path {string} -- Path to a file or directory
-        trg_path {string} -- Path to a directory
+        ``src_path`` {str} -- Path to a file or directory
+
+        ``trg_path`` {str} -- Path to a directory
 
     Keyword Arguments:
-        force_overwrite {bool} -- Empties trg_path before copying src_path
-            contents. If src_path it's a file it'll only remove that file.
-            (default: {True})
+        ``force_overwrite`` {bool} -- Empties trg_path before copying src_path
+        contents. If src_path it's a file it'll only remove that file.
+        (default: {True})
 
     Optional Keyword Arguments:
-        include_tx {bool} -- If tx files are found that match given
-            src_path, they're also copied.
-        only_tx {bool} -- Finds tx files that match given src_path,
-            but copies tx only, not src_path. For this flag to work,
-            include_tx must be passed and set to True.
-        find_sequence {bool} -- If set to False, it'll skip trying to find
-            sequence files for given src_path (default: {True})
+        ``include_tx`` {bool} -- If tx files are found that match given
+        src_path, they're also copied.
+
+        ``only_tx`` {bool} -- Finds tx files that match given src_path,
+        but copies tx only, not src_path. For this flag to work,
+        include_tx must be passed and set to True.
+
+        ``find_sequence`` {bool} -- If set to False, it'll skip trying to find
+        sequence files for given src_path (default: {True})
 
     Returns:
         [bool] -- If files were processed correctly, True is returned.
-            False otherwise.
+        False otherwise.
     """
     src_path_norm = os.path.normcase(os.path.abspath(src_path))
     trg_path_norm = os.path.normcase(os.path.abspath(trg_path))
@@ -77,16 +80,17 @@ def _process_dirs(src_path, trg_path, force_overwrite):
     Not meant to be used directly, use process_paths() instead.
 
     Arguments:
-        src_path {string} -- Path to a directory
-        trg_path {string} -- Path to a directory
+        ``src_path`` {str} -- Path to a directory
+
+        ``trg_path`` {str} -- Path to a directory
 
     Keyword Arguments:
-        force_overwrite {bool} -- Empties trg_path before copying src_path
+        ``force_overwrite`` {bool} -- Empties trg_path before copying src_path
             contents (default: {True})
 
     Returns:
         [bool] -- If directories were processed correctly, True is returned.
-            False otherwise.
+        False otherwise.
     """
     logger_string = "\tSource: {}\n\tTarget: {}\n".format(
                 src_path, trg_path
@@ -132,25 +136,28 @@ def _process_files(src_path, trg_path, force_overwrite, **kwargs):
     Not meant to be used directly, use process_paths() instead.
 
     Arguments:
-        src_path {string} -- Path to a file
-        trg_path {string} -- Path to a directory
+        ``src_path`` {str} -- Path to a file
+
+        ``trg_path`` {str} -- Path to a directory
 
     Keyword Arguments:
-        force_overwrite {bool} -- Empties trg_path before copying src_path
+        ``force_overwrite`` {bool} -- Empties trg_path before copying src_path
             contents (default: {True})
 
     Optional Keyword Arguments:
-        include_tx {bool} -- If tx files are found that match given
-            src_path, they're also copied. (default: {False})
-        only_tx {bool} -- Finds tx files that match given src_path,
-            but copies tx only, not src_path. For this flag to work,
-            include_tx must be passed and set to True. (default: {False})
-        find_sequence {bool} -- If set to False, it'll skip trying to find
-            sequence files for given src_path (default: {True})
+        ``include_tx`` {bool} -- If tx files are found that match given
+        src_path, they're also copied. (default: {False})
+
+        ``only_tx`` {bool} -- Finds tx files that match given src_path,
+        but copies tx only, not src_path. For this flag to work,
+        include_tx must be passed and set to True. (default: {False})
+
+        ``find_sequence`` {bool} -- If set to False, it'll skip trying to find
+        sequence files for given src_path (default: {True})
 
     Returns:
         [bool] -- If file was processed correctly, True is returned.
-            False otherwise.
+        False otherwise.
     """
     skip_non_tx = False
     if kwargs.get("only_tx"):
@@ -201,9 +208,15 @@ def _process_original_files(src_path, trg_path, force_overwrite):
     Not meant to be used directly, use process_paths() instead.
 
     Arguments:
-        src_path {string} -- Path to a file
-        trg_path {string} -- Path to a directory
-        force_overwrite {bool} -- Empties trg_path before copying src_path
+        ``src_path`` {str} -- Path to a file
+
+        ``trg_path`` {str} -- Path to a directory
+
+        ``force_overwrite`` {bool} -- Empties trg_path before copying src_path
+
+    Returns:
+        [bool] -- If files were processed correctly, True is returned.
+        False otherwise.
     """
     success = False
     try:
@@ -240,9 +253,15 @@ def _process_tx(original_file_path, trg_path, force_overwrite):
     Not meant to be used directly, use process_paths() instead.
 
     Arguments:
-        src_path {string} -- Path to a file
-        trg_path {string} -- Path to a directory
-        force_overwrite {bool} -- Empties trg_path before copying src_path
+        ``src_path`` {str} -- Path to a file
+
+        ``trg_path`` {str} -- Path to a directory
+
+        ``force_overwrite`` {bool} -- Empties trg_path before copying src_path
+
+    Returns:
+        [bool] -- If tx files were processed correctly, True is returned.
+        False otherwise.
     """
     src_tx_path = original_file_path.rsplit(".", 1)[0] + ".tx"
     success = False
