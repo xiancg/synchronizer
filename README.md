@@ -11,7 +11,7 @@ copier.processpaths(src_path, trg_path, force_overwrite=True, **kwargs)
 kwargs: 
     include_tx = True
     only_tx = True
-    find_sequence = True`
+    find_sequence = True
 
 2. Compares two files or directory paths and return sync status. Sync status refers to name and os.stat() comparisons
 ```python
@@ -23,7 +23,7 @@ syncstatus.get_sync_status(
                     'st_ctime', 'st_ino', 'st_dev'])
 ```
 
-2. Compares two paths and returns whichever has the most recent stat time. Default stat used for comparison is st_mtime which is: Time of most recent content modification.
+3. Compares two paths and returns whichever has the most recent stat time. Default stat used for comparison is st_mtime which is: Time of most recent content modification.
 ```python
 from synchronizer import syncstatus
 syncstatus.get_most_recent(src_path, trg_path, use_stat='st_mtime')
