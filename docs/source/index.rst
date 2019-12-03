@@ -51,8 +51,6 @@ Getting Started
     even if they're not sequential. This assumes the sequence digits are right 
     beside the file extension.
 
-    ::
-
     e.g.:
         - C_myfile_v568.jpg
         - MJ_thisisafileseq_455868.dpx
@@ -66,7 +64,7 @@ Getting Started
 
 .. toctree::
    :maxdepth: 3
-   :caption: Reference
+   :caption: API Reference
    
    copier
    syncstatus
