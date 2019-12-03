@@ -5,6 +5,6 @@ python:
 install:
     - pip install tox
     - pip install pipenv
-    - pipenv install
+    - pipenv update
     - pipenv install --dev
 script: tox
