@@ -11,6 +11,7 @@ flake8 = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
 synchronizer = {editable = true,path = "."}
+python-coveralls = "*"
 
 [packages]
 six = "*"

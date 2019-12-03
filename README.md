@@ -2,6 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/synchronizer/badge/?version=latest)](https://synchronizer.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/xiancg/synchronizer.svg?branch=master)](https://travis-ci.org/xiancg/synchronizer)
+[![Coverage Status](https://coveralls.io/repos/github/xiancg/synchronizer/badge.svg?branch=master)](https://coveralls.io/github/xiancg/synchronizer?branch=master)
 
 A collection of utilities for CGI-VFX to copy files from one place to another, find out basic stat differences between them and handle file sequences and textures (tx files).
 

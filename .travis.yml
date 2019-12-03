@@ -7,3 +7,5 @@ install:
     - pipenv install
     - pipenv install --dev
 script: tox
+after_success:
+    - coveralls
