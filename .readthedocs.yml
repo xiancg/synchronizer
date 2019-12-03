@@ -4,7 +4,6 @@ version: 2
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
   configuration: docs/source/conf.py
-  fail_on_warning: false
 
 # Build all formats
 formats: all
