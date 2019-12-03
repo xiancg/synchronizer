@@ -1,5 +1,7 @@
 # Synchronizer
 
+[![Documentation Status](https://readthedocs.org/projects/synchronizer/badge/?version=latest)](https://synchronizer.readthedocs.io/en/latest/?badge=latest)
+
 A collection of utilities for CGI-VFX to copy files from one place to another, find out basic stat differences between them and handle file sequences and textures (tx files).
 
 # Basic Usage:
