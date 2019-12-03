@@ -16,5 +16,5 @@ python:
     - requirements: requirements.txt
     - requirements: docs/requirements.txt
     - method: setuptools
-      path: .
+      path: src
   system_packages: true

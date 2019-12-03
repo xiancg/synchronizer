@@ -24,10 +24,9 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.7'
     ],
-    packages=find_packages(
-        where='.', exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
-        ),
-    python_requires='>=2.7, >=3.7',
+    package_dir={'': 'src'},
+    packages=find_packages(where='src'),
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4',
     extras_require={
         'dev': ['pytest', 'pytest-cov', 'pytest-datafiles', 'flake8'],
         'docs': ['sphinx', 'sphinx-rtd-theme']
