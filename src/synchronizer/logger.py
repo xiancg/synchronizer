@@ -14,7 +14,7 @@ def init_logger():
     logger.setLevel(logging.DEBUG)
     # Formatter
     formatter = logging.Formatter(
-                '[%(asctime)s:%(module)s:%(funcName)s:%(lineno)s:%(levelname)s] %(message)s')
+                '[%(asctime)s:%(module)s:%(funcName)s:%(lineno)s:%(levelname)s] %(message)s')  # noqa: E501
     # STDOUT stream
     streamHandler = logging.StreamHandler(sys.stdout)
     streamHandler.setLevel(logging.DEBUG)
@@ -25,7 +25,7 @@ def init_logger():
 def init_file_logger():
     # Formatter
     formatter = logging.Formatter(
-                '[%(asctime)s:%(module)s:%(funcName)s:%(lineno)s:%(levelname)s] %(message)s')
+                '[%(asctime)s:%(module)s:%(funcName)s:%(lineno)s:%(levelname)s] %(message)s')  # noqa: E501
     # Log file stream
     userPath = os.path.expanduser("~")
     module_dir = os.path.split(__file__)[0]

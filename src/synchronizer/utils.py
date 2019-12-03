@@ -115,7 +115,7 @@ def is_sequence_complete(files, name_pattern):
     Arguments:
         ``files`` {list} -- List of complete file paths to a file sequence.
         You could use get_sequence_files() to get a list.
-        
+
         ``name_pattern`` {str} -- As returned by get_sequence_name_pattern(),
         It's a string consisting of the base name for the file without
         trailing digits.
