@@ -10,7 +10,7 @@ pytest-datafiles = "*"
 flake8 = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
+synchronizer = {editable = true,path = "."}
 
 [packages]
 six = "*"
-synchronizer = {editable = true,path = "."}
