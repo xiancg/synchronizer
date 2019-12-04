@@ -6,6 +6,9 @@ install:
     - pip install pipenv
     - pipenv install
     - pipenv install --dev
-script: tox
+script:
+    - tox -e flake8
+    - tox -e py27
+    - tox -e py37
 after_success:
     - coveralls
