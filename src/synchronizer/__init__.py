@@ -13,4 +13,3 @@
 from synchronizer.copier import process_paths
 from synchronizer.syncstatus import get_sync_status, get_dir_size, get_most_recent, compare_stats
 from synchronizer.utils import get_sequence_files, is_sequence, is_sequence_complete, get_sequence_files, get_sequence_name_pattern, create_dir
-from synchronizer.logger import init_logger, init_file_logger, logger
