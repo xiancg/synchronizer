@@ -12,6 +12,7 @@ sphinx = "*"
 sphinx-rtd-theme = "*"
 synchronizer = {editable = true,path = "."}
 python-coveralls = "*"
+twine = "*"
 
 [packages]
 six = "*"

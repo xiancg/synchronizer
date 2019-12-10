@@ -10,16 +10,18 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='synchronizer',
-    version='2.0.0',
+    version='2.0.0-alpha',
     description='A collection of utilities for CGI-VFX to copy files '
                 'from one place to another, find out basic stat differences '
                 'between them and handle file sequences and textures (tx files).',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/xiancg/synchronizer',
+    download_url='https://github.com/xiancg/synchronizer/archive/v2.0.0-alpha.tar.gz',
     author='Chris Granados - Xian',
+    author_email='info@chrisgranados.com',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.7'
@@ -27,8 +29,10 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4',
+    install_requires=['six'],
     extras_require={
         'dev': ['pytest', 'pytest-cov', 'pytest-datafiles', 'flake8'],
         'docs': ['sphinx', 'sphinx-rtd-theme']
-    }
+    },
+    data_files=[('config', ['cfg/config.json'])]
 )
