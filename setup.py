@@ -34,5 +34,5 @@ setup(
         'dev': ['pytest', 'pytest-cov', 'pytest-datafiles', 'flake8'],
         'docs': ['sphinx', 'sphinx-rtd-theme']
     },
-    data_files=[('config', ['cfg/config.json'])]
+    package_data={'': ['cfg/config.json']}
 )
