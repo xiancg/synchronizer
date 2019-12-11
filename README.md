@@ -6,6 +6,11 @@
 
 A collection of utilities for CGI-VFX to copy files from one place to another, find out basic stat differences between them and handle file sequences and textures (tx files).
 
+# Installation
+```python
+pip install synchronizer
+```
+
 # Documentation
 [Synchronizer Docs](https://synchronizer.rtfd.io)
 
