@@ -2,6 +2,12 @@ Synchronizer's Docs
 ========================================
 A collection of utilities for CGI-VFX to copy files from one place to another, find out basic stat differences between them and handle file sequences and textures (tx files).
 
+Installation
+---------------
+    .. code-block:: python
+
+        pip install synchronizer
+
 Getting Started
 ---------------
 
