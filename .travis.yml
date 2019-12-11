@@ -7,8 +7,8 @@ install:
     - pipenv install
     - pipenv install --dev
 script:
+    - tox -e py27ci
+    - tox -e py37ci
     - tox -e flake8
-    - tox -e py27
-    - tox -e py37
 after_success:
     - coveralls
