@@ -17,7 +17,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/xiancg/synchronizer',
-    download_url='https://github.com/xiancg/synchronizer/archive/v2.0.0-alpha.tar.gz',
+    download_url='https://github.com/xiancg/synchronizer/archive/v2.0.0.tar.gz',
     author='Chris Granados - Xian',
     author_email='info@chrisgranados.com',
     classifiers=[
