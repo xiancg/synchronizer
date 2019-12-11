@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='synchronizer',
-    version='2.0.0-alpha',
+    version='2.0.0',
     description='A collection of utilities for CGI-VFX to copy files '
                 'from one place to another, find out basic stat differences '
                 'between them and handle file sequences and textures (tx files).',
@@ -21,7 +21,7 @@ setup(
     author='Chris Granados - Xian',
     author_email='info@chrisgranados.com',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.7'
