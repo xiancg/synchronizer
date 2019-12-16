@@ -31,7 +31,7 @@ setup(
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4',
     install_requires=['six'],
     extras_require={
-        'dev': ['pytest', 'pytest-cov', 'pytest-datafiles', 'flake8'],
+        'dev': ['pytest', 'pytest-cov', 'pytest-datafiles', 'python-coveralls', 'flake8'],
         'docs': ['sphinx', 'sphinx-rtd-theme']
     },
     package_data={'': ['cfg/config.json']}
