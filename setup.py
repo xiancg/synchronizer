@@ -8,16 +8,18 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+version_str = '2.0.1'
+
 setup(
     name='synchronizer',
-    version='2.0.0',
+    version=version_str,
     description='A collection of utilities for CGI-VFX to copy files '
                 'from one place to another, find out basic stat differences '
                 'between them and handle file sequences and textures (tx files).',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/xiancg/synchronizer',
-    download_url='https://github.com/xiancg/synchronizer/archive/v2.0.0.tar.gz',
+    download_url='https://github.com/xiancg/synchronizer/archive/v{}.tar.gz'.format(version_str),
     author='Chris Granados - Xian',
     author_email='info@chrisgranados.com',
     classifiers=[
