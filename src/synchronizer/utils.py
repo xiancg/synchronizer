@@ -162,10 +162,13 @@ def get_sequence_name_pattern(file_path):
     of the file. Both elements are used by other functions to identify
     file sequences. This assumes the sequence digits are right beside
     the file extension.
-        e.g.:
-            - C_myfile_v568.jpg\n
-            - MJ_thisisafileseq_4568.dpx\n
-            - MB_udimsforthewin.1008.tx
+
+    e.g.:
+        - C_myfile_v568.jpg
+
+        - MJ_thisisafileseq_4568.dpx
+
+        - MB_udimsforthewin.1008.tx
 
     Arguments:
         ``file_path`` {string} -- Full path to a file
@@ -174,9 +177,10 @@ def get_sequence_name_pattern(file_path):
         [str] -- A string consisting of the base name for the file
         without trailing digits.
 
-            e.g.:
-                - File: 'C_cresta_02__MSH-BUMP.1001.png'\n
-                - Name Pattern: 'C_cresta_02__MSH-BUMP.'
+        e.g.:
+            - File: 'C_cresta_02__MSH-BUMP.1001.png'
+
+            - Name Pattern: 'C_cresta_02__MSH-BUMP.'
 
         [None] -- If no digits can be found in the name, returns None
     """

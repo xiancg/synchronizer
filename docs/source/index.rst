@@ -1,6 +1,6 @@
 Synchronizer's Docs
 ========================================
-A collection of utilities for CGI-VFX to copy files from one place to another, find out basic stat differences between them and handle file sequences and textures (tx files).
+A collection of utilities for CGI-VFX to copy files from one place to another, find out basic stat differences between them and handle file sequences and textures (with tx files).
 
 Installation
 ---------------
@@ -9,7 +9,9 @@ Installation
         pip install synchronizer
 
 Getting Started
----------------
+-----------------
+
+These are some examples of what can be done. For further info please see the API reference which goes really into depth into each function.
 
 1. Process paths
     Copies ``src_path`` to ``trg_path``. Takes both files and directories as source. 
@@ -75,3 +77,10 @@ Getting Started
    copier
    syncstatus
    utilities
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Changelog and Roadmap
+   
+   roadmap
+   changelog
