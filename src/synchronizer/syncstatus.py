@@ -261,7 +261,7 @@ def get_most_recent(src_path, trg_path, use_stat='st_mtime'):
         else:
             readable_time = datetime.datetime.fromtimestamp(src_most)
             logger.debug(
-                "Both src_path and trg_path have equal {}: {}\n".format(
+                "Both src_path and trg_path have equal {}: {}\n{}".format(
                     use_stat, readable_time, logger_string)
                 )
             return None
